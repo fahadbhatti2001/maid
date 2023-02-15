@@ -75,31 +75,6 @@ export const Registration = () => {
                 <div className="grid grid-cols-12 w-full mb-2 gap-2">
                     <div className="col-span-12 bg-white rounded-md shadow">
                         <div className="h-[8vh] px-4 border-b flex items-center">
-                        <h1 className="font-PoppinsRegular text-base">
-                            Registed Students
-                        </h1>
-                        </div>
-                        <div className="h-[30vh] overflow-auto w-full cst-scrollbar">
-                            
-                        {
-                            users.map((e, i) => (
-                                    <div key={i} className="grid grid-cols-12 place-items-center gap-2 p-4 border-t">
-                                        <div className="col-span-2">
-                                            <img src={e.image} className="object-cover w-10 h-10 rounded-full border-2 border-primary-0" />
-                                        </div>
-                                        <h1 className="col-span-4 font-PoppinsRegular w-full">
-                                            {e.firstname} {e.lastname}
-                                        </h1>
-                                        <h1 className="col-span-6 font-PoppinsRegular w-full">
-                                            {e.email}
-                                        </h1>
-                                    </div>  
-                            ))
-                        }
-                        </div>
-                    </div>
-                    <div className="col-span-12 bg-white rounded-md shadow">
-                        <div className="h-[8vh] px-4 border-b flex items-center">
                             <h1 className="font-PoppinsRegular text-base">
                                 Register Students
                             </h1>
