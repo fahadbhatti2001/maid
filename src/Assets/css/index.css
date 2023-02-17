@@ -192,6 +192,11 @@ body::-webkit-scrollbar-thumb {
   background-color: #F87474;
 }
 
+input[type="radio"]{
+  appearance: none;
+  display: none;
+}
+
 .trshow{
   animation: cst-show-fade .6s ease;
   position: relative;
