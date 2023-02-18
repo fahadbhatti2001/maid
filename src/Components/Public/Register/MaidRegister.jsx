@@ -124,7 +124,7 @@ export const MaidRegister = () => {
                             <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
                             <input type="text" {...register("address", {required: true})} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"}/>
                         </div>
-                        <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
+                        <div className="flex lg:flex-row flex-col gap-4">
                             <div className="flex flex-col w-full gap-2">
                                 <p className="font-PoppinsRegular text-sm text-zinc-800 pl-1">
                                     Experience
