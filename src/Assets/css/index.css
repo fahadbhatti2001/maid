@@ -196,6 +196,10 @@ input[type="file"] {
   display: none;
 }
 
+input[type='radio']{
+  visibility: hidden;
+}
+
 input[type='radio']:after {
   width: 15px;
   height: 15px;

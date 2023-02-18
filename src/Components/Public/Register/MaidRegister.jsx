@@ -95,7 +95,7 @@ export const MaidRegister = () => {
                             image == null ? 
                             <img src="/images/Camera.svg" className="p-10 w-full rounded-none" />
                             :
-                            <img src={image} className="w-full rounded-full" />
+                            <img src={image} className="w-32 h-32 object-cover rounded-full" />
                         }
                     </label>
                     <input id="image" onChange={(e) => {onImageChange(e), setIsImage(e.target.files[0])}} accept="image/png, image/jpg, image/jpeg, image/tiff" type="file" />
