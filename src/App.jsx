@@ -6,6 +6,8 @@ import {
   MaidRegister,
   ClientRegister,
   UserAuthContextProvider,
+  ProtectedLogin,
+  ProtectedClientDashboard,
 } from "@/Components";
 
 export const App = () => {
@@ -13,10 +15,11 @@ export const App = () => {
     <>
       <UserAuthContextProvider>
         <Routes>
-          <Route path="/" element={<Login/>}/>
+          <Route path="/" element={<ProtectedLogin/>}/>
           <Route path="/register" element={<Registration/>}/>
           <Route path="/maid-register" element={<MaidRegister/>}/>
           <Route path="/client-register" element={<ClientRegister/>}/>
+          <Route path="/client-dashboard" element={<ProtectedClientDashboard/>}/>
         </Routes>
       </UserAuthContextProvider>
     </>

@@ -1,24 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleLeft } from '@fortawesome/free-regular-svg-icons';
 import { UseUserAuth, Header, Footer } from '@/Components';
+import { useForm } from 'react-hook-form';
+import { db, auth } from '@/FirebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
 
 export const Login = () => {
+
+    const navigate = useNavigate()
     
-    const [email , setEmail] = useState("")
-    const [password , setPassword] = useState("")
+    let [ getMaid, setGetMaid ] = useState()
+    let [ getClient, setGetClient ] = useState()
+
     const [forgetEmail , setForgetEmail] = useState("")
     const [fotgetPassword, setForgetPassword] = useState(true)
     const { signIn, forgetPassword } = UseUserAuth()
+    const maidsRef = collection(db, "Maids");
+    const clientsRef = collection(db, "Clients");
 
-    const navigate = useNavigate()
+    const getData = async () => {  
+        const maidData = await getDocs(maidsRef)
+        setGetMaid(maidData.docs)
+        const clientData = await getDocs(clientsRef)
+        setGetClient(clientData.docs)
+    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+    useEffect(() => {
+        getData();
+    }, [])
+
+    const { register, handleSubmit, formState: {errors} } = useForm()
+
+    async function onSubmit(data){
         try {
-            await signIn(email, password)
-            navigate('/dashboard')
+            await signIn(data.email, data.password)
+            let maid = getMaid.filter(x => x.id == auth.lastNotifiedUid)
+            let client = getClient.filter(x => x.id == auth.lastNotifiedUid)
+            // console.log("Maid", maid)
+            // console.log("Client", client)
+
+            if(maid.length == 0){
+                navigate('/client-dashboard')
+            }
+            else{
+                navigate('/maid-register')
+            }
         } catch (error) {
             console.log("Error")
         }
@@ -52,16 +80,16 @@ export const Login = () => {
                         </p>
                         <div className="flex flex-col pt-4">
                             <label htmlFor="email" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Email</label>
-                            <input onChange={(e) => {setEmail(e.target.value)}} type="email" id="email" placeholder="Enter your email" className="font-PoppinsRegular text-base p-2 border border-gray-300 rounded shadow-sm mb-4 placeholder:text-xs placeholder:text-zinc-400 focus:outline-primary-0"/>
+                            <input {...register("email", {required: true})} type="email" id="email" placeholder="Enter your email" className={(errors.email ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"}/>
                             <label htmlFor="password" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Password</label>
-                            <input onChange={(e) => {setPassword(e.target.value)}} type="password" id="password" placeholder="Enter your password" className="font-PoppinsRegular text-base p-2 border border-gray-300 rounded shadow-sm mb-4 placeholder:text-xs placeholder:text-zinc-400 focus:outline-primary-0"/>
+                            <input {...register("password", {required: true})} type="password" id="password" placeholder="Enter your password" className={(errors.password ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"}/>
                             <div className="flex justify-end py-2">
                                 <button onClick={() => setForgetPassword(false)} className="font-PoppinsRegular text-xs text-primary-0">
                                     Forget Password
                                 </button>
                             </div>
                             <div className="flex justify-center">
-                                <button onClick={handleSubmit} type="button" className="font-PoppinsRegular text-base py-2 px-8 hover:bg-primary-0 hover:text-white border-2 border-primary-0 text-primary-0 rounded-full shadow-sm mt-2 transition-all delay-75 ease-in-out">
+                                <button onClick={handleSubmit(onSubmit)} type="button" className="font-PoppinsRegular text-base py-2 px-8 hover:bg-primary-0 hover:text-white border-2 border-primary-0 text-primary-0 rounded-full shadow-sm mt-2 transition-all delay-75 ease-in-out">
                                     Login
                                 </button>
                             </div>

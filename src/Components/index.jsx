@@ -8,6 +8,12 @@ export { ClientRegister } from "./Public/Register/ClientRegister";
 export { MaidRegister } from "./Public/Register/MaidRegister";
 // export { Reset } from "./Public/Reset";
 
+// Protected Components
+export { ProtectedClientDashboard, ProtectedLogin } from "./Protected/Protected";
+
+// Dashboard Components
+export { ClientDashboard } from "./Public/Dashboard/Client/ClientDashboard";
+
 // Helping Functions
 export { Spinner } from "./HelpingComponents/Spinner";
 
