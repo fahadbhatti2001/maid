@@ -192,9 +192,72 @@ body::-webkit-scrollbar-thumb {
   background-color: #F87474;
 }
 
-input[type="radio"]{
-  appearance: none;
+input[type="file"] {
   display: none;
+}
+
+input[type='radio']:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  top: -4px;
+  left: -1px;
+  position: relative;
+  background-color: #fff;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 1px solid #707070;
+}
+
+input[type='radio']:checked:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  top: -4px;
+  left: -1px;
+  position: relative;
+  background-color: #F87474;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 1px solid #F87474;
+}
+
+.validation[type='radio']:after {
+  border: 1px solid #F87474;
+}
+
+input[type='checkbox']{
+  visibility: hidden;
+}
+
+input[type='checkbox']:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  top: -4px;
+  left: -1px;
+  position: relative;
+  background-color: #fff;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 1px solid #707070;
+}
+
+input[type='checkbox']:checked:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  top: -4px;
+  left: -1px;
+  position: relative;
+  background-color: #F87474;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 1px solid #F87474;
 }
 
 .trshow{

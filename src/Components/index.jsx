@@ -1,8 +1,15 @@
 // Public Components
 export { Home } from "./Public/Home";
+
+// Public Auth Components
 export { Login } from "./Public/Login";
-export { Registration } from "./Public/Registration";
+export { Registration } from "./Public/Register/Registration";
+export { ClientRegister } from "./Public/Register/ClientRegister";
+export { MaidRegister } from "./Public/Register/MaidRegister";
 // export { Reset } from "./Public/Reset";
+
+// Helping Functions
+export { Spinner } from "./HelpingComponents/Spinner";
 
 // Auth Components
 export { UseUserAuth, UserAuthContextProvider } from "../Context/UserAuth";

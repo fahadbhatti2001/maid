@@ -40,7 +40,7 @@ export const Login = () => {
             <Header position="static"/>
         
             <div className="flex justify-center h-[80vh] lg:px-20 md:px-12 px-6">
-                <div className="w-1/2 place-items-center flex flex-col justify-center items-center">
+                <div className="md:w-1/2 w-full place-items-center flex flex-col justify-center items-center">
                 {
                     fotgetPassword ?
                     <div className="lg:w-3/4 w-full trhide bg-white rounded-lg p-8">
