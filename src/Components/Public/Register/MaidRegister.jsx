@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Header, Footer } from '@/Components';
+import { Header, Footer, UseUserAuth } from '@/Components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { db, auth, storage } from '@/FirebaseConfig';
@@ -17,9 +17,12 @@ export const MaidRegister = () => {
     let [ spin, setSpin ] = useState(false);
 
     const navigate = useNavigate();
+    
+    const { logOut } = UseUserAuth();
 
-    function redirectTo() {
-        navigate('/register');
+    async function redirectTo() {
+        await logOut();
+        navigate('/');
     }
 
     const onImageChange = (event) => {
