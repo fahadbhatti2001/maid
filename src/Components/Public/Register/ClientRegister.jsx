@@ -19,7 +19,7 @@ export const ClientRegister = () => {
     const navigate = useNavigate();
 
     function redirectTo() {
-        navigate('/');
+        navigate('/register');
     }
 
     const onImageChange = (event) => {

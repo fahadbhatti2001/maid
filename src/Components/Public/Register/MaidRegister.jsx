@@ -19,7 +19,7 @@ export const MaidRegister = () => {
     const navigate = useNavigate();
 
     function redirectTo() {
-        navigate('/');
+        navigate('/register');
     }
 
     const onImageChange = (event) => {
