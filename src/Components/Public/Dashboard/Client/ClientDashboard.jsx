@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { UseUserAuth } from '@/Components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff, faBroom } from '@fortawesome/free-solid-svg-icons';
+import { faPowerOff, faBroom, faUser, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
-import { auth } from "@/FirebaseConfig";
+import { ManageProfile } from './ManageProfile';
+import { FindMaid } from './FindMaid';
 
 export const ClientDashboard = () => {
 
     const navigate = useNavigate()
 
-    let [ showAddDaddy, setShowAddDaddy ] = useState(false)
-    let [ showManageDaddy, setShowManageDaddy ] = useState(true)
-    let [ showReportDaddy, setShowReportDaddy ] = useState(false)
+    let [ showManageProfile, setShowManageProfile ] = useState(true)
+    let [ showFindMaid, setShowFindMaid ] = useState(false)
 
-    const { logOut, user } = UseUserAuth();
+    const { logOut } = UseUserAuth();
 
     const handleLogout = async () => {
         try {
@@ -25,39 +25,43 @@ export const ClientDashboard = () => {
     };
 
   return (
-    <>
+        <>
             <div className="w-full flex justify-between">
-                <div className="body-sidebar bg-purple-200 p-4 h-screen flex flex-col justify-between content-between">
+                <div className="body-sidebar p-4 h-screen flex flex-col justify-between content-between">
                     <div className="">
-                        <h1 className="font-PoppinsMediumItalic text-2xl">
+                        <h1 className="font-PoppinsMediumItalic flex md:justify-start justify-center gap-2 text-2xl">
                             <FontAwesomeIcon icon={faBroom} />
-                            Maid Finder
+                            <p className="md:block hidden">
+                                Maid Finder
+                            </p>
                         </h1>
-                        <div className="py-4">
-                            <button /*onClick={() => {setShowAddDaddy(true), setShowManageDaddy(false), setShowReportDaddy(false)}}*/ className="text-gray-700 p-4 w-full text-left font-bold hover:bg-gray-300 transition ease-in-out" type="button">
-                                Manage Profile
+                        <div className="py-4 w-full">
+                            <button onClick={() => {setShowManageProfile(true), setShowFindMaid(false)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                                <p className="md:block hidden">
+                                    Manage Profile
+                                </p>
+                                <FontAwesomeIcon icon={faUser} className="md:hidden inline-block md:text-base text-2xl"/>
                             </button>
-                            <button /*onClick={() => {setShowAddDaddy(false), setShowManageDaddy(true), setShowReportDaddy(false)}}*/ className="text-gray-700 p-4 w-full text-left font-bold hover:bg-gray-300 transition ease-in-out" type="button">
-                                Find Maid
-                            </button>
-                            <button /*onClick={() => {setShowAddDaddy(false), setShowManageDaddy(false), setShowReportDaddy(true)}}*/ className="text-gray-700 p-4 w-full text-left font-bold hover:bg-gray-300 transition ease-in-out" type="button">
-                                Report Maid
+                            <button onClick={() => {setShowManageProfile(false), setShowFindMaid(true)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                                <p className="md:block hidden">
+                                    Find Maid
+                                </p>
+                                <FontAwesomeIcon icon={faMagnifyingGlass} className="md:hidden inline-block md:text-base text-2xl"/>
                             </button>
                         </div>
                     </div>
-                    <button onClick={handleLogout} type="button" className="text-gray-700 p-4 w-full text-left flex justify-between items-center font-bold hover:bg-gray-300 transition ease-in-out">
-                        Log Out
-                        <FontAwesomeIcon icon={faPowerOff}/>
+                    <button onClick={handleLogout} type="button" className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full text-left flex md:justify-between justify-center items-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out">
+                        <p className="md:block hidden">
+                            Log Out
+                        </p>
+                        <FontAwesomeIcon icon={faPowerOff} className="md:text-base text-2xl" />
                     </button>
                 </div>
-
-                {/* {
-                    showAddDaddy ? <AddDaddy/> :
-                    showManageDaddy ? <MaangeDaddies/> :
-                    showReportDaddy ? <ReportDaddy/> :
+                {
+                    showManageProfile ? <ManageProfile/> : 
+                    showFindMaid ? <FindMaid/> : 
                     null
-                } */}
-                
+                }
             </div>
         </>
   )

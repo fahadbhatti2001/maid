@@ -38,14 +38,11 @@ export const Login = () => {
             await signIn(data.email, data.password)
             let maid = getMaid.filter(x => x.id == auth.lastNotifiedUid)
             let client = getClient.filter(x => x.id == auth.lastNotifiedUid)
-            // console.log("Maid", maid)
-            // console.log("Client", client)
-
             if(maid.length == 0){
                 navigate('/client-dashboard')
             }
             else{
-                navigate('/maid-register')
+                navigate('/maid-dashboard')
             }
         } catch (error) {
             console.log("Error")

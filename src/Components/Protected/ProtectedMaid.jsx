@@ -1,22 +1,22 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { UseUserAuth, ClientDashboard, Login } from '@/Components';
+import { UseUserAuth, MaidDashboard, Login } from '@/Components';
 
-export const ProtectedClientDashboard = () => {
+export const ProtectedMaidDashboard = () => {
     
     let { user } = UseUserAuth()
     if(!user){
        return  <Navigate to="/"/>
     }
 
-    return <ClientDashboard/>
+    return <MaidDashboard/>
 };
 
-export const ProtectedLogin = () => {
+export const ProtectedMaidLogin = () => {
     
     let { user } = UseUserAuth()
     if(user){
-       return  <Navigate to="/client-dashboard"/>
+       return  <Navigate to="/maid-dashboard"/>
     }
 
     return <Login/>
