@@ -6,6 +6,7 @@ import { UseUserAuth, Header, Footer } from '@/Components';
 import { useForm } from 'react-hook-form';
 import { db, auth } from '@/FirebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 
 export const Login = () => {
 
@@ -45,7 +46,17 @@ export const Login = () => {
                 navigate('/maid-dashboard')
             }
         } catch (error) {
-            console.log("Error")
+            Swal.fire({
+                icon: "error",
+                title: "Wrong Credentials!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: '#000000',
+            });
         }
     }
 
@@ -55,7 +66,17 @@ export const Login = () => {
             await forgetPassword(forgetEmail)
             setForgetPassword(true)
         } catch (error) {
-            console.log("Error")
+            Swal.fire({
+                icon: "error",
+                title: "Enter Registed Email!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: '#000000',
+            });
         }
     }
 
