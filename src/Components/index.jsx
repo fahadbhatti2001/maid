@@ -11,10 +11,12 @@ export { MaidRegister } from "./Public/Register/MaidRegister";
 // Protected Components
 export { ProtectedClientDashboard, ProtectedClientLogin } from "./Protected/ProtectedClient";
 export { ProtectedMaidDashboard, ProtectedMaidLogin } from "./Protected/ProtectedMaid";
+export { ProtectedAdminDashboard, ProtectedAdminLogin } from "./Protected/ProtectedAdmin";
 
 // Dashboard Components
 export { ClientDashboard } from "./Public/Dashboard/Client/ClientDashboard";
 export { MaidDashboard } from "./Public/Dashboard/Maid/MaidDashboard";
+export { AdminDashboard } from "./Public/Dashboard/Admin/AdminDashboard";
 
 // Helping Functions
 export { Spinner } from "./HelpingComponents/Spinner";

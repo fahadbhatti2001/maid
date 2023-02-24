@@ -35,32 +35,30 @@ export const Login = () => {
     const { register, handleSubmit, formState: {errors} } = useForm()
 
     async function onSubmit(data){
-        if(data.email == 'admin@site.com' && data.password == 'admin123'){
-            navigate('/admin-dashboard')
-        }
-        else{
-            try {
-                await signIn(data.email, data.password)
-                let maid = getMaid.filter(x => x.id == auth.lastNotifiedUid)
-                if(maid.length == 0){
-                    navigate('/client-dashboard')
-                }
-                else{
-                    navigate('/maid-dashboard')
-                }
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Wrong Credentials!",
-                    toast: true,
-                    showCancelButton: false,
-                    animation: false,
-                    position: "top",
-                    timer: 3000,
-                    showConfirmButton: false,
-                    iconColor: '#000000',
-                });
+        try {
+            await signIn(data.email, data.password)
+            let maid = getMaid.filter(x => x.id == auth.lastNotifiedUid)
+            if(data.email == 'admin@gmail.com' && data.password == 'admin123'){
+                navigate('/admin-dashboard')
             }
+            else if(maid.length == 0){
+                navigate('/client-dashboard')
+            }
+            else{
+                navigate('/maid-dashboard')
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Wrong Credentials!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: '#000000',
+            });
         }
     }
 
