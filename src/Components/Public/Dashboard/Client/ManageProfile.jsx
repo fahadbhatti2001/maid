@@ -27,6 +27,7 @@ export const ManageProfile = () => {
             {
                 isEdit ? 
                 <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
+                    
                     <div className="flex md:flex-row flex-col items-center gap-4">
                         <img src={data == undefined ? "" : data.image.stringValue} className="w-40 h-40 object-cover rounded-lg" />
                         <div className="md:text-left text-center">
@@ -37,14 +38,15 @@ export const ManageProfile = () => {
                                 {data == undefined ? "" : data.email.stringValue}
                             </p>
                             <p className="text-base font-PoppinsRegular text-gray-700">
-                                House no 8, Block N, Subzazar Scheme, Lahore
-                                {/* {data == undefined ? "" : data.address.stringValue} */}
+                                {data == undefined ? "" : data.address.stringValue}
                             </p>
                         </div>
                     </div>
                 </div>
                 :
-                <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar"></div>
+                <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
+
+                </div>
             }
         </div>
     </>

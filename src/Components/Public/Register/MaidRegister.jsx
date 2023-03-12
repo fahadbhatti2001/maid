@@ -45,6 +45,7 @@ export const MaidRegister = () => {
     
                         const inputDataCopy = {...data}
                         inputDataCopy.timestamp = serverTimestamp()
+                        inputDataCopy.approve = false
                         inputDataCopy.image = url
     
                         await setDoc(doc(db, 'Maids', user.uid), inputDataCopy)

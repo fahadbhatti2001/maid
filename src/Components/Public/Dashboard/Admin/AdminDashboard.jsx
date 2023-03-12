@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff, faBroom, faUser, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import { AllClients } from './AllClients';
+import { AllMaids } from './AllMaids';
 
 export const AdminDashboard = () => {
 
@@ -58,6 +59,7 @@ export const AdminDashboard = () => {
                 </div>
                 {
                     showAllClients ? <AllClients/> :  
+                    showAllMaids ? <AllMaids/> :  
                     null
                 }
             </div>
