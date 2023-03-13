@@ -165,7 +165,7 @@
 }
 
 body{
-  background-color: #E3DFFD;
+  @apply bg-primary-3;
 }
 
 .body-main {

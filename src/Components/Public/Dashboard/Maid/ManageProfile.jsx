@@ -4,7 +4,7 @@ import { db, auth, storage } from "@/FirebaseConfig";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink } from '@fortawesome/free-solid-svg-icons';
+import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Spinner } from '@/Components'
 import produce from 'immer';
 
@@ -62,7 +62,21 @@ export const ManageProfile = () => {
                         inputDataCopy.image = url;
                         const maidDoc = doc(db, "Maids", auth.lastNotifiedUid);
                         await updateDoc(maidDoc, inputDataCopy);
-                        
+                        setData(
+                            produce((draft) => {
+                                console.log(updatedData.lname)
+                                draft.image.stringValue = url
+                                draft.fname.stringValue = updatedData.fname
+                                draft.lname.stringValue = updatedData.lname
+                                draft.address.stringValue = updatedData.address
+                                draft.experience.stringValue = updatedData.experience
+                                draft.floor.booleanValue = updatedData.floor
+                                draft.cloth.booleanValue = updatedData.cloth
+                                draft.meal.booleanValue = updatedData.meal
+                                draft.child.booleanValue = updatedData.child
+                                draft.kitchen.booleanValue = updatedData.kitchen
+                            })
+                        )
                     })
                 })
                 setIsEdit(true)
@@ -82,7 +96,7 @@ export const ManageProfile = () => {
                         draft.meal.booleanValue = updatedData.meal
                         draft.child.booleanValue = updatedData.child
                         draft.kitchen.booleanValue = updatedData.kitchen
-                      })
+                    })
                 )
                 setIsEdit(true)
                 setSpin(false)
@@ -100,13 +114,13 @@ export const ManageProfile = () => {
         <>
             <Spinner isBlinking={false} isSpinner={spin}></Spinner>
             <div className="body-main h-screen bg-violet-200">
-                <div className="w-full h-[12vh] px-6 flex items-center bg-indigo-200">
-                    <h1 className="text-gray-700 md:text-4xl text-2xl font-bold">Manage Profile</h1>
+                <div className="w-full h-[12vh] px-6 flex items-center bg-primary-3">
+                    <h1 className="text-gray-700 md:text-4xl text-2xl font-bold">Dashboard</h1>
                 </div>
                 {
                     isEdit ?
-                        <div className="w-full h-[88vh] flex flex-col justify-between overflow-auto p-6 cst-scrollbar">
-                            <div className="flex md:flex-row flex-col justify-between items-center">
+                        <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
+                            <div className="bg-white rounded p-4 flex md:flex-row flex-col justify-between items-center">
                                 <div className="flex md:flex-row flex-col items-center gap-4">
                                     <img src={data == undefined ? "" : data.image.stringValue} className="w-40 h-40 object-cover rounded-lg" />
                                     <div className="md:text-left text-center">
@@ -167,6 +181,42 @@ export const ManageProfile = () => {
                                     <h1 className="text-xl">
                                         Kitchen Handling
                                     </h1>
+                                </div>
+                            </div>
+                            <div className=" grid md:grid-cols-3 grid-cols-1 gap-4 w-full mt-4">
+                                <div className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white">
+                                    <div className="flex items-center gap-2 w-full px-4">
+                                        <img src="/images/profile.png" className="w-20 h-20 rounded-full object-cover" />
+                                        <div className="text-gray-700">
+                                            <h1 className="text-lg font-PoppinsSemiBold">
+                                                Fahad Bhatti
+                                            </h1>
+                                            <div className="flex items-center gap-1 w-full text-amber-500">
+                                                <FontAwesomeIcon icon={faStar} className="text-xs" />
+                                                <p className="font-PoppinsMedium  text-sm">5.0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="font-PoppinsRegular text-sm px-4 text-gray-700">
+                                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Et, dolores quisquam voluptas illo laboriosam dicta eos autem natus labore aspernatur sed ipsa. Optio, cupiditate amet! Similique nostrum deserunt earum necessitatibus?
+                                    </p>
+                                </div>
+                                <div className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white">
+                                    <div className="flex items-center gap-2 w-full px-4">
+                                        <img src="/images/profile.png" className="w-20 h-20 rounded-full object-cover" />
+                                        <div className="text-gray-700">
+                                            <h1 className="text-lg font-PoppinsSemiBold">
+                                                Fahad Bhatti
+                                            </h1>
+                                            <div className="flex items-center gap-1 w-full text-amber-500">
+                                                <FontAwesomeIcon icon={faStar} className="text-xs" />
+                                                <p className="font-PoppinsMedium  text-sm">5.0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="font-PoppinsRegular text-sm px-4 text-gray-700">
+                                        Lorem ipsum dol! Similique nostrum deserunt earum necessitatibus?
+                                    </p>
                                 </div>
                             </div>
                         </div>

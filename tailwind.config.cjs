@@ -33,6 +33,7 @@ module.exports = {
           0: "#F87474",
           1: "#FFB562",
           2: "#3AB0FF",
+          3: "#E3DFFD",
         }
       }
     },
