@@ -138,8 +138,8 @@ export const ManageProfile = () => {
                                 <div className="md:w-auto w-full">
                                     <p className="text-base font-PoppinsMedium grid grid-cols-2 text-gray-700">
                                         <span className="font-PoppinsSemiBold">Status: </span>
-                                        <span className={"text-right " + (data == undefined ? "" : data.approved.booleanValue == false ? "text-red-600" : data.approved.booleanValue == true ? "text-green-600" : "text-yellow-600")}>
-                                            {data == undefined ? "" : data.approved.booleanValue == false ? "Unsatisfied" : data.approved.booleanValue == true ? "Satisfactory" : "Under Supervision"}
+                                        <span className={"text-right " + (data == undefined ? "" : data.approve.booleanValue == false ? "text-red-600" : data.approve.booleanValue == true ? "text-green-600" : "text-yellow-600")}>
+                                            {data == undefined ? "" : data.approve.booleanValue == false ? "Unsatisfied" : data.approve.booleanValue == true ? "Satisfactory" : "Under Supervision"}
                                         </span>
                                     </p>
                                     <p className="text-base font-PoppinsMedium grid grid-cols-2 text-gray-700">
