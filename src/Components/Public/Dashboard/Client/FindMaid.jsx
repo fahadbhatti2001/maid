@@ -29,7 +29,7 @@ export const FindMaid = () => {
         <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
           <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
             {
-              data == undefined ? null : data.map((e, i) => (
+              data == undefined ? null : data.map((e, i) => e.approve == true ? ( 
                 <button type="button" key={i} className="col-span-1 bg-white p-2 rounded flex flex-col justify-center items-center">
                   <img src={e.image} className="w-full h-48 object-cover rounded-t" />
                   <div className="w-full flex flex-col items-start py-2">
@@ -48,7 +48,7 @@ export const FindMaid = () => {
                     <p className="font-PoppinsMedium  text-sm">5.0</p>
                   </div>
                 </button>
-              ))
+              ): null)
             }
           </div>
         </div>

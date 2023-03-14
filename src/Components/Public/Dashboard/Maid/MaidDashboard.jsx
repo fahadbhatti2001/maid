@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { UseUserAuth } from '@/Components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff, faBroom, faUser, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faPowerOff, faBroom, faUser, faStar } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import { ManageProfile } from './ManageProfile';
+import { Reviews } from './Reviews';
 
 export const MaidDashboard = () => {
 
     const navigate = useNavigate()
 
     let [ showManageProfile, setShowManageProfile ] = useState(true)
-    let [ showFindMaid, setShowFindMaid ] = useState(false)
+    let [ showReviews, setShowReviews ] = useState(false)
 
     const { logOut } = UseUserAuth();
 
@@ -35,18 +36,18 @@ export const MaidDashboard = () => {
                             </p>
                         </h1>
                         <div className="py-4 w-full">
-                            <button onClick={() => {setShowManageProfile(true), setShowFindMaid(false)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                            <button onClick={() => {setShowManageProfile(true), setShowReviews(false)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
                                 <p className="md:block hidden">
-                                    Manage Profile
+                                    Dashboard
                                 </p>
                                 <FontAwesomeIcon icon={faUser} className="md:hidden inline-block md:text-base text-2xl"/>
                             </button>
-                            {/* <button onClick={() => {setShowManageProfile(false), setShowFindMaid(true)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                            <button onClick={() => {setShowManageProfile(false), setShowReviews(true)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
                                 <p className="md:block hidden">
-                                    Find Maid
+                                    Reviews
                                 </p>
-                                <FontAwesomeIcon icon={faMagnifyingGlass} className="md:hidden inline-block md:text-base text-2xl"/>
-                            </button> */}
+                                <FontAwesomeIcon icon={faStar} className="md:hidden inline-block md:text-base text-2xl"/>
+                            </button>
                         </div>
                     </div>
                     <button onClick={handleLogout} type="button" className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full text-left flex md:justify-between justify-center items-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out">
@@ -58,7 +59,7 @@ export const MaidDashboard = () => {
                 </div>
                 {
                     showManageProfile ? <ManageProfile/> : 
-                    // showFindMaid ? <FindMaid/> : 
+                    showReviews ? <Reviews/> : 
                     null
                 }
             </div>
