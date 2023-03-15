@@ -8,10 +8,10 @@ export const Header = (props) => {
 
   return (
     <>
-        <div className={"flex md:justify-between justify-center items-center h-[10vh] w-full px-20 " + position}>
-            <h1 className="font-PoppinsMediumItalic text-2xl">
+        <div className={"flex justify-center items-end md:h-[16vh] h-[10vh] w-full px-20 " + position}>
+            <h1 className="font-PoppinsMedium md:text-5xl text-2xl">
                 <FontAwesomeIcon icon={faBroom} />
-                Maid Finder
+                Online Maid Finder
             </h1>
         </div>
     </>

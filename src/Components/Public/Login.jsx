@@ -87,7 +87,7 @@ export const Login = () => {
 
             <Header position="static"/>
         
-            <div className="flex justify-center h-[80vh] lg:px-20 md:px-12 px-6">
+            <div className="flex justify-evenly items-center md:h-[74vh] h-[80vh] lg:px-20 md:px-12 px-6">
                 <div className="md:w-1/2 w-full place-items-center flex flex-col justify-center items-center">
                 {
                     fotgetPassword ?
@@ -145,6 +145,7 @@ export const Login = () => {
                     </div>
                 }
                 </div>
+                <img src="/images/Login.svg" className="w-[60vh] md:block hidden" />
             </div>
 
             <Footer/>

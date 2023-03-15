@@ -9,7 +9,7 @@ export const Registration = () => {
   return (
         <>
             <Header position="static"/>
-            <div className="h-[80vh] lg:px-20 md:px-12 px-6 flex justify-center items-center trshow">
+            <div className="md:h-[74vh] h-[80vh] lg:px-20 md:px-12 px-6 flex justify-center items-center trshow">
                 <div className="bg-white p-8 rounded-lg md:w-2/4 w-full flex flex-col gap-4 items-center justify-center">
                     <h1 className="text-4xl font-PoppinsMedium block whitespace-nowrap text-center">
                         Join as a
