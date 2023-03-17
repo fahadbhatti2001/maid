@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '@/FirebaseConfig';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar, faMapMarkerAlt, faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import produce from 'immer';
 
 export const AllMaids = () => {
@@ -19,9 +19,65 @@ export const AllMaids = () => {
     getData();
   }, [])
 
+  async function onSubmit(updatedData) {
+    try {
+      setSpin(true)
+      if (isImage != null) {
+        const deletePreviousimage = ref(storage, isUpdatedImage);
+        await deleteObject(deletePreviousimage);
+        const imageRef = ref(storage, `images/${imageName}`);
+        uploadBytes(imageRef, isImage).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then(async (url) => {
+            const inputDataCopy = { ...updatedData };
+            inputDataCopy.image = url;
+            const maidDoc = doc(db, "Maids", auth.lastNotifiedUid);
+            await updateDoc(maidDoc, inputDataCopy);
+            setData(
+              produce((draft) => {
+                console.log(updatedData.lname)
+                draft.image.stringValue = url
+                draft.fname.stringValue = updatedData.fname
+                draft.lname.stringValue = updatedData.lname
+                draft.address.stringValue = updatedData.address
+                draft.experience.stringValue = updatedData.experience
+                draft.floor.booleanValue = updatedData.floor
+                draft.cloth.booleanValue = updatedData.cloth
+                draft.meal.booleanValue = updatedData.meal
+                draft.child.booleanValue = updatedData.child
+                draft.kitchen.booleanValue = updatedData.kitchen
+              })
+            )
+          })
+        })
+        setIsEdit(true)
+        setSpin(false)
+      } else {
+        const maidDoc = doc(db, "Maids", auth.lastNotifiedUid);
+        await updateDoc(maidDoc, updatedData);
+        setData(
+          produce((draft) => {
+            console.log(updatedData.lname)
+            draft.fname.stringValue = updatedData.fname
+            draft.lname.stringValue = updatedData.lname
+            draft.address.stringValue = updatedData.address
+            draft.experience.stringValue = updatedData.experience
+            draft.floor.booleanValue = updatedData.floor
+            draft.cloth.booleanValue = updatedData.cloth
+            draft.meal.booleanValue = updatedData.meal
+            draft.child.booleanValue = updatedData.child
+            draft.kitchen.booleanValue = updatedData.kitchen
+          })
+        )
+        setIsEdit(true)
+        setSpin(false)
+      }
+    } catch (error) {
+      console.log("error")
+    }
+  }
+
   async function approveMaid(data, status) {
     try {
-      console.log(status)
       const inputDataCopy = { ...data };
       inputDataCopy.approve = status;
       const maidDoc = doc(db, "Maids", data.id);
@@ -81,17 +137,25 @@ export const AllMaids = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex w-full">
+                  <div className="grid grid-cols-3 w-full">
                     <button onClick={() => approveMaid(e, true)} className={"w-full py-1 font-PoppinsMedium text-white bg-green-500 " +
-                      (e.approve == false ? "rounded"
-                        : e.approve == true ? "hidden"
-                          : "rounded-l")
+                      (e.approve == false ? "rounded col-span-2"
+                        : e.approve == true ? "hidden col-span-2"
+                          : "rounded-l col-span-1")
                     } type="button">Approve</button>
                     <button onClick={() => approveMaid(e, false)} className={"w-full py-1 font-PoppinsMedium text-white bg-red-500 " +
-                      (e.approve == false ? "hidden"
-                        : e.approve == true ? "rounded"
-                          : "rounded-r")
+                      (e.approve == false ? "hidden col-span-2"
+                        : e.approve == true ? "rounded col-span-2"
+                          : "rounded-r col-span-1")
                     } type="button">Reject</button>
+                    <div className="flex w-full">
+                      <button onClick={() => ""} type="button" className="w-full text-red-500" >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button onClick={() => ""} type="button" className="w-full text-green-500" >
+                        <FontAwesomeIcon icon={faPenToSquare} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
