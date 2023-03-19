@@ -100,7 +100,16 @@ export const ManageProfile = () => {
                         <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
                             <div className="bg-white rounded p-4 flex md:flex-row flex-col justify-between items-center">
                                 <div className="flex md:flex-row flex-col items-center gap-4">
-                                    <img src={data == undefined ? "" : data.image.stringValue} className="w-40 h-40 object-cover rounded-lg" />
+                                    {
+                                        data == undefined ?
+                                            <div className="w-40 h-40 flex justify-center items-center">
+                                                <div className="spinner-border animate-spin inline-block w-8 h-8 border-2 rounded-full text-primary-1" role="status">
+                                                    <span className="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                            :
+                                            <img src={data.image.stringValue} className="w-40 h-40 object-cover rounded-lg" />
+                                    }
                                     <div className="md:text-left text-center">
                                         <h1 className="text-2xl font-PoppinsSemiBold text-gray-700">
                                             {data == undefined ? "" : data.fname.stringValue} {data == undefined ? "" : data.lname.stringValue}

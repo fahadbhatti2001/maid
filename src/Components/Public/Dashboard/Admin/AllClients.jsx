@@ -232,58 +232,6 @@ export const AllClients = () => {
                     <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
                     <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
                   </div>
-                  <div className="flex lg:flex-row flex-col gap-4">
-                    <div className="flex flex-col w-full gap-2">
-                      <p className="font-PoppinsRegular text-sm text-zinc-800 pl-1">
-                        Experience
-                      </p>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="radio" {...register("experience", { required: true })} className={errors.experience ? "accent-primary-0 validation" : "accent-primary-0 border border-transparent"} value="lessthanone" id="lessthanone" />
-                        <label htmlFor="lessthanone" className="font-PoppinsRegular text-sm text-zinc-800">Less then 1 Year</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="radio" {...register("experience", { required: true })} className={errors.experience ? "accent-primary-0 validation" : "accent-primary-0 border border-transparent"} value="oneyear" id="oneyear" />
-                        <label htmlFor="oneyear" className="font-PoppinsRegular text-sm text-zinc-800">1 Year</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="radio" {...register("experience", { required: true })} className={errors.experience ? "accent-primary-0 validation" : "accent-primary-0 border border-transparent"} value="twotothree" id="twotothree" />
-                        <label htmlFor="twotothree" className="font-PoppinsRegular text-sm text-zinc-800">2 - 3 Years</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="radio" {...register("experience", { required: true })} className={errors.experience ? "accent-primary-0 validation" : "accent-primary-0 border border-transparent"} value="fourtofive" id="fourtofive" />
-                        <label htmlFor="fourtofive" className="font-PoppinsRegular text-sm text-zinc-800">4 - 5 Years</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="radio" {...register("experience", { required: true })} className={errors.experience ? "accent-primary-0 validation" : "accent-primary-0 border border-transparent"} value="fiveabove" id="fiveabove" />
-                        <label htmlFor="fiveabove" className="font-PoppinsRegular text-sm text-zinc-800">Above then 5 Years</label>
-                      </div>
-                    </div>
-                    <div className="flex flex-col w-full gap-2">
-                      <p className="font-PoppinsRegular text-sm text-zinc-800 pl-1">
-                        Experties
-                      </p>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="checkbox" {...register("floor")} className="accent-primary-0" id="floor" />
-                        <label htmlFor="floor" className="font-PoppinsRegular text-sm text-zinc-800">Floor Cleaning</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="checkbox" {...register("cloth")} className="accent-primary-0" id="cloth" />
-                        <label htmlFor="cloth" className="font-PoppinsRegular text-sm text-zinc-800">Cloth Cleaning</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="checkbox" {...register("meal")} className="accent-primary-0" id="meal" />
-                        <label htmlFor="meal" className="font-PoppinsRegular text-sm text-zinc-800">Meal Cooking</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="checkbox" {...register("child")} className="accent-primary-0" id="child" />
-                        <label htmlFor="child" className="font-PoppinsRegular text-sm text-zinc-800">Child Care</label>
-                      </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <input type="checkbox" {...register("kitchen")} className="accent-primary-0" id="kitchen" />
-                        <label htmlFor="kitchen" className="font-PoppinsRegular text-sm text-zinc-800">Kitchen Handling</label>
-                      </div>
-                    </div>
-                  </div>
                 </div>
                 <div className="flex justify-center w-full">
                   <button onClick={handleSubmit(onSubmit)} type="button" className="font-PoppinsRegular text-base py-2 w-full hover:bg-primary-0 hover:text-white border-2 border-primary-0 text-primary-0 rounded-full shadow-sm mt-2 transition-all delay-75 ease-in-out">
