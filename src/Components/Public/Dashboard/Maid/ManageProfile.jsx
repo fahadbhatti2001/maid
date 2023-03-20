@@ -86,7 +86,6 @@ export const ManageProfile = () => {
                 await updateDoc(maidDoc, updatedData);
                 setData(
                     produce((draft) => {
-                        console.log(updatedData.lname)
                         draft.fname.stringValue = updatedData.fname
                         draft.lname.stringValue = updatedData.lname
                         draft.address.stringValue = updatedData.address

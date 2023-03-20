@@ -32,13 +32,13 @@ export const MaidDashboard = () => {
                         <h1 className="font-PoppinsMediumItalic flex md:justify-start justify-center gap-2 text-2xl">
                             <FontAwesomeIcon icon={faBroom} />
                             <p className="md:block hidden">
-                                Maid Finder
+                                Online Maid Finder
                             </p>
                         </h1>
                         <div className="py-4 w-full">
                             <button onClick={() => {setShowManageProfile(true), setShowReviews(false)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
                                 <p className="md:block hidden">
-                                    Dashboard
+                                    Make / Update Profile
                                 </p>
                                 <FontAwesomeIcon icon={faUser} className="md:hidden inline-block md:text-base text-2xl"/>
                             </button>
