@@ -240,7 +240,7 @@ export const AllMaids = () => {
                         </h1>
                         <div className="flex items-start gap-1 text-gray-500">
                           <FontAwesomeIcon icon={faMapMarkerAlt} className="text-xs mt-px" />
-                          <p className="font-PoppinsMedium text-xs text-left">
+                          <p className="font-PoppinsMedium text-xs text-left w-52 text-ellipsis overflow-hidden whitespace-nowrap">
                             {e.address}
                           </p>
                         </div>
