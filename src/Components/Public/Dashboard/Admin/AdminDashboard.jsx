@@ -29,10 +29,10 @@ export const AdminDashboard = () => {
             <div className="w-full flex justify-between">
                 <div className="body-sidebar p-4 h-screen flex flex-col justify-between content-between">
                     <div className="">
-                        <h1 className="font-PoppinsMediumItalic flex md:justify-start justify-center gap-2 text-2xl">
+                        <h1 className="font-PoppinsMediumItalic flex md:justify-start justify-center gap-2 text-xl">
                             <FontAwesomeIcon icon={faBroom} />
                             <p className="md:block hidden">
-                                Maid Finder
+                                Online Maid Finder
                             </p>
                         </h1>
                         <div className="py-4 w-full">

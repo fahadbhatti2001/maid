@@ -36,6 +36,9 @@ export const ManageProfile = () => {
         setValue("fname", data.fname.stringValue)
         setValue("lname", data.lname.stringValue)
         setValue("address", data.address.stringValue)
+        setValue("phone", data.phone.stringValue)
+        setValue("age", data.age.stringValue)
+        setValue("gender", data.gender.stringValue)
         setIsUpdatedImage(data.image.stringValue)
         setImage(data.image.stringValue)
         setIsEdit(false)
@@ -60,6 +63,9 @@ export const ManageProfile = () => {
                                 draft.fname.stringValue = updatedData.fname
                                 draft.lname.stringValue = updatedData.lname
                                 draft.address.stringValue = updatedData.address
+                                draft.phone.stringValue = updatedData.phone
+                                draft.age.stringValue = updatedData.age
+                                draft.gender.stringValue = updatedData.gender
                             })
                         )
                     })
@@ -74,6 +80,9 @@ export const ManageProfile = () => {
                         draft.fname.stringValue = updatedData.fname
                         draft.lname.stringValue = updatedData.lname
                         draft.address.stringValue = updatedData.address
+                        draft.phone.stringValue = updatedData.phone
+                        draft.age.stringValue = updatedData.age
+                        draft.gender.stringValue = updatedData.gender
                     })
                 )
                 setIsEdit(true)
@@ -147,9 +156,30 @@ export const ManageProfile = () => {
                                             <input type="text" {...register("lname", { required: true })} id="lname" placeholder="Enter your Last Name" className={(errors.lname ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
                                         </div>
                                     </div>
-                                    <div className="flex flex-col w-full">
-                                        <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
-                                        <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                                    <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
+                                        <div className="flex flex-col w-full">
+                                            <label htmlFor="phone" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Phone Number</label>
+                                            <input type="number" {...register("phone", { required: true })} id="phone" placeholder="Enter your Phone Number" className={(errors.phone ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                                        </div>
+                                        <div className="flex flex-col w-full">
+                                            <label htmlFor="age" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Age</label>
+                                            <input type="number" {...register("age", { required: true })} id="age" placeholder="Enter your Age" className={(errors.age ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                                        </div>
+                                    </div>
+                                    <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
+                                        <div className="flex flex-col w-full">
+                                            <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
+                                            <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                                        </div>
+                                        <div className="flex flex-col gap-2 w-full">
+                                            <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
+                                            <div className="flex gap-2 items-center">
+                                                <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800">Male</label>
+                                                <input type="radio" {...register("gender")} value="male" />
+                                                <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800">Female</label>
+                                                <input type="radio" {...register("gender")} value="female" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex justify-center w-full">
