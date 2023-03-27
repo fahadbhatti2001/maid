@@ -46,7 +46,10 @@ export const ClientRegister = () => {
                         const inputDataCopy = {...data}
                         inputDataCopy.timestamp = serverTimestamp()
                         inputDataCopy.image = url
-    
+                        inputDataCopy.age = ""
+                        inputDataCopy.gender = ""
+                        inputDataCopy.phone = ""
+
                         await setDoc(doc(db, 'Clients', user.uid), inputDataCopy)
                         setSpin(false);
                         Swal.fire({

@@ -47,6 +47,11 @@ export const MaidRegister = () => {
                         inputDataCopy.timestamp = serverTimestamp()
                         inputDataCopy.approve = null
                         inputDataCopy.image = url
+                        inputDataCopy.phone = ""
+                        inputDataCopy.age = ""
+                        inputDataCopy.gender = ""
+                        inputDataCopy.bank = ""
+                        inputDataCopy.accountNo = ""
     
                         await setDoc(doc(db, 'Maids', user.uid), inputDataCopy)
                         setSpin(false);
