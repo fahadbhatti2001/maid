@@ -130,6 +130,10 @@ export const ClientRegister = () => {
                             <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
                             <input type="text" {...register("address", {required: true})} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"}/>
                         </div>
+                        <div className="flex flex-col w-full">
+                            <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Description</label>
+                            <input type="text" {...register("description", {required: true})} id="description" placeholder="Enter your Full Description" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"}/>
+                        </div>
                     </div>
                     <div className="flex justify-center">
                         <button onClick={handleSubmit(onSubmit)} type="button" className="font-PoppinsRegular text-base py-2 px-8 hover:bg-primary-0 hover:text-white border-2 border-primary-0 text-primary-0 rounded-full shadow-sm mt-2 transition-all delay-75 ease-in-out">
