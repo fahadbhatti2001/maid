@@ -42,16 +42,18 @@ export const MaidRegister = () => {
                     getDownloadURL(snapshot.ref).then( async url => {
                         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
                         const user = userCredential.user
-    
                         const inputDataCopy = {...data}
                         inputDataCopy.timestamp = serverTimestamp()
                         inputDataCopy.approve = null
                         inputDataCopy.image = url
                         inputDataCopy.phone = ""
+                        inputDataCopy.rate = 0
                         inputDataCopy.age = ""
                         inputDataCopy.gender = ""
                         inputDataCopy.bank = ""
                         inputDataCopy.accountNo = ""
+                        inputDataCopy.working = false
+                        inputDataCopy.reviews = []
     
                         await setDoc(doc(db, 'Maids', user.uid), inputDataCopy)
                         setSpin(false);
