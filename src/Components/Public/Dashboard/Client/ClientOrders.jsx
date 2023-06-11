@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { db } from "@/FirebaseConfig";
-import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import { faCircleLeft } from '@fortawesome/free-regular-svg-icons';
+import { collection, getDocs } from "firebase/firestore";
 import { UseUserAuth, Popup, Spinner } from "@/Components"
 import { useForm } from 'react-hook-form';
-import Swal from 'sweetalert2';
 export const ClientOrders = () => {
 
   let [data, setData] = useState([])
@@ -56,11 +52,6 @@ export const ClientOrders = () => {
     let specificUser = []
     array.forEach(e => {
       if (e.cid == user.uid) {
-        let maid = (maidData.length == 0 ? [{
-          fname: "",
-          lname: "",
-        }] : maidData.filter(x => x.id == e.mid))
-        e.name = `${maid[0].fname} ${maid[0].lname}`
         specificUser.push(e)
       }
     });
@@ -121,8 +112,7 @@ export const ClientOrders = () => {
           <table className="text-white text-left w-full mt-4">
             <thead className="">
               <tr className="border-b-transparent text-sm text-zinc-600">
-                <th className="bg-violet-300 p-4 rounded-tl-md w-40">Maid Name</th>
-                <th className="bg-violet-300 p-4 text-ellipsis overflow-hidden w-80">Description</th>
+                <th className="bg-violet-300 p-4 text-ellipsis overflow-hidden w-80 rounded-tl-md">Description</th>
                 <th className="bg-violet-300 p-4">Start Date</th>
                 <th className="bg-violet-300 p-4">End Date</th>
                 <th className="bg-violet-300 p-4">Status</th>
@@ -133,7 +123,6 @@ export const ClientOrders = () => {
               {
                 data == undefined ? null : ordersData(data).map((e, i) => (
                   <tr key={i} className="text-sm text-zinc-600 font-light hover:bg-violet-100 hover:text-zinc-700 whitespace-nowrap border-b border-b-violet-300">
-                    <td className="p-4 w-40">{e.name}</td>
                     <td className="p-4 w-80">
                       <p className="text-ellipsis overflow-hidden w-80">
                         {e.description}
