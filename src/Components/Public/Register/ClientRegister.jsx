@@ -49,6 +49,7 @@ export const ClientRegister = () => {
                         inputDataCopy.age = ""
                         inputDataCopy.gender = ""
                         inputDataCopy.phone = ""
+                        inputDataCopy.order = []
 
                         await setDoc(doc(db, 'Clients', user.uid), inputDataCopy)
                         setSpin(false);

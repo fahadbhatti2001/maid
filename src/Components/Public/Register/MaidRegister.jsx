@@ -54,6 +54,7 @@ export const MaidRegister = () => {
                         inputDataCopy.accountNo = ""
                         inputDataCopy.working = false
                         inputDataCopy.reviews = []
+                        inputDataCopy.order = []
     
                         await setDoc(doc(db, 'Maids', user.uid), inputDataCopy)
                         setSpin(false);

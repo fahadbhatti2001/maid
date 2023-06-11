@@ -20,6 +20,7 @@ export { AdminDashboard } from "./Public/Dashboard/Admin/AdminDashboard";
 
 // Helping Functions
 export { Spinner } from "./HelpingComponents/Spinner";
+export { Popup } from "./HelpingComponents/Popup";
 
 // Auth Components
 export { UseUserAuth, UserAuthContextProvider } from "../Context/UserAuth";

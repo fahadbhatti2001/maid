@@ -6,7 +6,8 @@ import process from "node:process"
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000
+    port: 3000,
+    host: true
   },
   resolve: {
     alias: {
