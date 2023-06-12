@@ -170,6 +170,8 @@ body{
 
 .body-main {
   width: calc(100% - 288px);
+  z-index: 10;
+  position: relative;
 }
 
 .body-sidebar {

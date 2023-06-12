@@ -56,6 +56,7 @@ export const FindMaid = () => {
       setSpin(true);
       formData.status = 1
       formData.rating = null
+      formData.reason = ""
       formData.timestamp = serverTimestamp()
       const docRef = await addDoc(collection(db, "Orders"), formData);
 

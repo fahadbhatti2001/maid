@@ -8,7 +8,7 @@ export const Popup = (props) => {
     if (!open) return <></>
 
     return (
-        <div className="pl-16 cst-tr bg-zinc-600 bg-opacity-25 absolute top-0 left-0 z-50 h-screen w-screen p-4">
+        <div className="cst-tr bg-zinc-600 bg-opacity-25 absolute top-0 left-0 z-50 h-screen w-screen p-4">
             <div className="flex h-full w-full">
                 <div className={"bg-white rounded m-auto shadow shadow-zinc-300 " + width}>
                     <div className="flex bg-zinc-200 justify-between rounded-t p-3 pl-4 border-b border-zinc-200">

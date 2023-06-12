@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { db } from "@/FirebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { UseUserAuth, Popup, Spinner } from "@/Components"
 import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import produce from 'immer';
 export const MaidOrders = () => {
 
     let [data, setData] = useState([])
     let [clientData, setClientData] = useState([])
     let [spin, setSpin] = useState(false);
     let [showPopup, setShowPopup] = useState(false)
+    let [showDeclinePopup, setShowDeclinePopup] = useState(false)
+    let [orderId, setOrderId] = useState(0)
+    let [orderStatusBtn, setOrderStatusBtn] = useState(0)
+    let [clientImage, setClientImage] = useState("")
 
     const ordersRef = collection(db, "Orders")
     const clientRef = collection(db, "Clients")
@@ -26,7 +32,8 @@ export const MaidOrders = () => {
         getData();
     }, [])
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm()
+    const { register, setValue, formState: { errors } } = useForm()
+    const { register: registerDecline, handleSubmit: handleSubmitDecline, setValue: setValueDecline, formState: { errors: errorsDecline } } = useForm()
 
     const orderStatus = (status) => {
         let slug = ""
@@ -59,12 +66,116 @@ export const MaidOrders = () => {
     }
 
     const showOrderDetail = (object) => {
+        setOrderId(object.id)
+        setOrderStatusBtn(object.status)
+        let client = clientData.filter(x => x.id == object.cid)
+        setClientImage(client[0].image)
+        setValue("name", `${client[0].fname} ${client[0].lname}`)
+        setValue("email", client[0].email)
+        setValue("phone", client[0].phone)
         setValue("price", object.price)
         setValue("toDate", object.toDate)
-        setValue("fromData", object.fromDate)
+        setValue("fromDate", object.fromDate)
         setValue("description", object.description)
         setValue("address", object.address)
         setShowPopup(true)
+    }
+
+    const acceptOrder = async () => {
+        let order = data.filter(x => x.id == orderId)
+        try {
+            const inputDataCopy = { ...order[0] };
+            inputDataCopy.status = 2;
+            const orderDoc = doc(db, "Orders", orderId);
+            await updateDoc(orderDoc, inputDataCopy);
+            setData(
+                produce((draft) => {
+                    const maidData = draft.find((maidData) => maidData.id === orderId);
+                    maidData.status = inputDataCopy.status
+                })
+            )
+            setShowPopup(false)
+            Swal.fire({
+                icon: "success",
+                title: "Order Accepted!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#A8C256",
+                confirmButtonColor: "#E0A800",
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Unable to accept order",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });;
+        }
+    }
+
+    const declineOrder = (formData) => {
+        let order = data.filter(x => x.id == orderId)
+        try {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3AB0FF",
+                cancelButtonColor: "#F87474",
+                confirmButtonText: "Yes, Decline it!",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const inputDataCopy = { ...order[0] };
+                    inputDataCopy.status = 4;
+                    inputDataCopy.reason = formData.reason;
+                    const orderDoc = doc(db, "Orders", orderId);
+                    await updateDoc(orderDoc, inputDataCopy);
+                    setData(
+                        produce((draft) => {
+                            const maidData = draft.find((maidData) => maidData.id === orderId);
+                            maidData.status = inputDataCopy.status
+                        })
+                    )
+                    setShowDeclinePopup(false)
+                    setShowPopup(false)
+                    Swal.fire({
+                        icon: "success",
+                        title: "Decline Order!",
+                        toast: true,
+                        showCancelButton: false,
+                        animation: false,
+                        position: "top",
+                        timer: 3000,
+                        showConfirmButton: false,
+                        iconColor: "#000000",
+                        confirmButtonColor: "#E0A800",
+                    });
+                }
+            });
+        } catch (error) {
+            setSpin(false);
+            Swal.fire({
+                icon: "error",
+                title: "Unable to decline",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#000000",
+            });
+        }
     }
 
     return (
@@ -73,33 +184,95 @@ export const MaidOrders = () => {
             <Popup
                 title="Order Detail"
                 open={showPopup}
-                width="md:w-1/3"
+                width="w-1/2"
                 close={() => setShowPopup(false)}
             >
-                <div className="flex flex-col gap-0">
-                    <div className="flex flex-col w-full">
-                        <label htmlFor="price" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Price</label>
-                        <input disabled type="number" min={100} {...register("price", { required: true })} id="price" placeholder="Enter your Price" className={(errors.price ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <div className="flex flex-col">
-                            <label htmlFor="toDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">To</label>
-                            <input disabled type="date" {...register("toDate", { required: true })} id="toDate" className={(errors.toDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                <div className="">
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="col-span-1 flex flex-col w-full mt-px">
+                            <div className="flex justify-center items-center my-4">
+                                <img src={clientImage} className="h-40 w-40 object-cover rounde-md" />
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="name" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Name</label>
+                                <input disabled type="text" {...register("name", { required: true })} id="name" className={(errors.name ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="email" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Email</label>
+                                <input disabled type="text" {...register("email", { required: true })} id="email" className={(errors.email ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="phone" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Phone</label>
+                                <input disabled type="text" {...register("phone", { required: true })} id="phone" placeholder="No Phone Number" className={(errors.phone ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                            </div>
                         </div>
-                        <div className="flex flex-col">
-                            <label htmlFor="fromDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">From</label>
-                            <input disabled type="date" {...register("fromDate", { required: true })} id="fromDate" className={(errors.fromDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                        <div className="col-span-2 flex flex-col gap-0">
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Description</label>
+                                <textarea disabled type="text" {...register("description", { required: true })} id="description" className={(errors.description ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="price" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Price</label>
+                                <input disabled type="number" min={100} {...register("price", { required: true })} id="price" className={(errors.price ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col">
+                                    <label htmlFor="toDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">To</label>
+                                    <input disabled type="date" {...register("toDate", { required: true })} id="toDate" className={(errors.toDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label htmlFor="fromDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">From</label>
+                                    <input disabled type="date" {...register("fromDate", { required: true })} id="fromDate" className={(errors.fromDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                                </div>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Address</label>
+                                <input disabled type="text" {...register("address", { required: true })} id="address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                            </div>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full">
-                        <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Address</label>
-                        <input disabled type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                    {
+                        orderStatusBtn == 1 ?
+                            <div className="grid grid-cols-2">
+                                <button onClick={() => acceptOrder()} type="button" className="w-full mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-l">
+                                    Accept Order
+                                </button>
+                                <button onClick={() => setShowDeclinePopup(true)} type="button" className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-r">
+                                    Decline Order
+                                </button>
+                            </div>
+                            : orderStatusBtn == 2 ?
+                                <button onClick={() => ""} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
+                                    Cancel Order
+                                </button>
+                                : null
+                    }
+                </div>
+            </Popup>
+            <Popup
+                title="Cancel Order"
+                open={showDeclinePopup}
+                width="w-1/3"
+                close={() => setShowDeclinePopup(false)}
+            >
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex items-center gap-2 w-full p-2 border border-zinc-200 rounded-md bg-white hover:bg-primary-0/20">
+                        <input type="radio" {...registerDecline("reason", { required: true })} value="Offer Low price" id="a" />
+                        <label htmlFor="a" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Offer Low price</label>
                     </div>
-                    <div className="flex flex-col w-full">
-                        <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Description</label>
-                        <textarea disabled type="text" {...register("description", { required: true })} id="description" placeholder="Enter Full Description" className={(errors.description ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                    <div className="flex items-center gap-2 w-full p-2 border border-zinc-200 rounded-md bg-white hover:bg-primary-0/20">
+                        <input type="radio" {...registerDecline("reason", { required: true })} value="Destination is too far" id="b" />
+                        <label htmlFor="b" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Destination is too far</label>
                     </div>
-                    <button onClick={() => ""} type="button" className="w-full mt-2 bg-primary-0 hover:bg-transparent border-2 border-primary-0 transition-all duration-75 text-white hover:text-primary-0 px-4 py-1 rounded">
+                    <div className="flex items-center gap-2 w-full p-2 border border-zinc-200 rounded-md bg-white hover:bg-primary-0/20">
+                        <input type="radio" {...registerDecline("reason", { required: true })} value="Not available at given time" id="c" />
+                        <label htmlFor="c" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Not available at given time</label>
+                    </div>
+                    <div className="flex items-center gap-2 w-full p-2 border border-zinc-200 rounded-md bg-white hover:bg-primary-0/20">
+                        <input type="radio" {...registerDecline("reason", { required: true })} value="Unable to understand requirments" id="d" />
+                        <label htmlFor="d" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Unable to understand requirments</label>
+                    </div>
+                    <button onClick={handleSubmitDecline(declineOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
                         Cancel Order
                     </button>
                 </div>
@@ -130,7 +303,13 @@ export const MaidOrders = () => {
                                         </td>
                                         <td className="p-4">{e.price}</td>
                                         <td className="p-4">{e.toDate}</td>
-                                        <td className="p-4">{orderStatus(e.status)}</td>
+                                        <td className={"p-4 font-PoppinsMedium " + (
+                                            e.status == 1 ? "text-amber-600" :
+                                                e.status == 2 ? "text-blue-500" :
+                                                    e.status == 3 ? "text-green-500" :
+                                                        e.status == 4 ? "text-red-500" :
+                                                            e.status == 5 ? "text-zinc-400" : ""
+                                        )}>{orderStatus(e.status)}</td>
                                         <td className="p-4 text-center w-20">
                                             <button onClick={() => showOrderDetail(e)} type="button" className="">
                                                 Show
