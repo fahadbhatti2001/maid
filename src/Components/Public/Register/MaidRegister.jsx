@@ -47,7 +47,7 @@ export const MaidRegister = () => {
                         inputDataCopy.approve = null
                         inputDataCopy.image = url
                         inputDataCopy.phone = ""
-                        inputDataCopy.rate = 0
+                        inputDataCopy.rate = []
                         inputDataCopy.age = ""
                         inputDataCopy.gender = ""
                         inputDataCopy.bank = ""

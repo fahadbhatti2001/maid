@@ -34,7 +34,7 @@ export const FindMaid = () => {
     setIsShow(false)
   }
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm()
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm()
 
   var today = new Date();
   var yyyy = today.getFullYear();
@@ -50,7 +50,6 @@ export const FindMaid = () => {
     setShowPopup(true)
   }
 
-
   const placeOrder = async (formData) => {
     try {
       setSpin(true);
@@ -58,6 +57,9 @@ export const FindMaid = () => {
       formData.rating = null
       formData.reason = ""
       formData.review = ""
+      formData.clientCancel = ""
+      formData.maidCancel = ""
+      formData.isRated = false
       formData.timestamp = serverTimestamp()
       const docRef = await addDoc(collection(db, "Orders"), formData);
 
@@ -72,6 +74,12 @@ export const FindMaid = () => {
       const maidData = maidSnapshot.data();
       const newMaidData = [...maidData.order, docRef.id];
       await updateDoc(maidDoc, { order: newMaidData });
+
+      reset({
+        description: "",
+        address: "",
+        fromDate: ""
+      })
 
       setSpin(false);
       Swal.fire({

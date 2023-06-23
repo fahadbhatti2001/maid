@@ -15,8 +15,10 @@ export const MaidOrders = () => {
     let [showCancelPopup, setShowCancelPopup] = useState(false)
     let [showCancelDetailPopup, setShowCancelDetailPopup] = useState(false)
     let [cancelBy, setCancelBy] = useState(false)
+    let [isRated, setIsRated] = useState(false)
     let [orderId, setOrderId] = useState(0)
     let [orderStatusBtn, setOrderStatusBtn] = useState(0)
+    let [showReviewPopup, setShowReviewPopup] = useState(false)
     let [clientImage, setClientImage] = useState("")
 
     const ordersRef = collection(db, "Orders")
@@ -38,6 +40,7 @@ export const MaidOrders = () => {
     const { register, setValue, formState: { errors } } = useForm()
     const { register: registerDecline, handleSubmit: handleSubmitDecline } = useForm()
     const { register: registerCancel, handleSubmit: handleSubmitCancel } = useForm()
+    const { register: registerRating, setValue: setvalueRating } = useForm()
 
     const orderStatus = (status) => {
         let slug = ""
@@ -70,8 +73,12 @@ export const MaidOrders = () => {
     }
 
     const showOrderDetail = (object) => {
+        setValue("cancel", "")
         setOrderId(object.id)
+        setIsRated(object.isRated)
         setOrderStatusBtn(object.status)
+        setvalueRating("review", object.review)
+        setvalueRating("rating", object.rating)
         let client = clientData.filter(x => x.id == object.cid)
         setClientImage(client[0].image)
         setValue("name", `${client[0].fname} ${client[0].lname}`)
@@ -82,6 +89,7 @@ export const MaidOrders = () => {
         setValue("fromDate", object.fromDate)
         setValue("description", object.description)
         setValue("address", object.address)
+        setValue("reason", object.reason)
         if (object.maidCancel == "" && object.clientCancel != "") {
             setValue("cancel", object.clientCancel)
             setCancelBy(false)
@@ -359,12 +367,26 @@ export const MaidOrders = () => {
                                         Cancel Order
                                     </button>
                                 </div>
-                                : orderStatusBtn == 5 ?
+                                : orderStatusBtn == 3 ?
                                     <div className="font-PoppinsRegular w-full flex justify-center items-center p-2">
-                                        Order Canceled by {cancelBy == true ? "You" : "Client"} &nbsp;
-                                        <button onClick={() => setShowCancelDetailPopup(true)} type="button" className="text-primary-0">See Reason</button>
+                                        {
+                                            isRated == false ?
+                                                <p className="">Client didn't review yet!</p>
+                                                :
+                                                <button onClick={() => setShowReviewPopup(true)} type="button" className="text-primary-0">See Review</button>
+                                        }
                                     </div>
-                                    : null
+                                    : orderStatusBtn == 4 ?
+                                        <div className="flex flex-col w-full">
+                                            <label htmlFor="reason" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Decline Reason</label>
+                                            <input disabled type="text" {...register("reason", { required: true })} id="reason" className={(errors.reason ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+                                        </div>
+                                        : orderStatusBtn == 5 ?
+                                            <div className="font-PoppinsRegular w-full flex justify-center items-center p-2">
+                                                Order Canceled by {cancelBy == true ? "You" : "Client"} &nbsp;
+                                                <button onClick={() => setShowCancelDetailPopup(true)} type="button" className="text-primary-0">See Reason</button>
+                                            </div>
+                                            : null
                     }
                 </div>
             </Popup>
@@ -392,7 +414,7 @@ export const MaidOrders = () => {
                         <label htmlFor="d" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Unable to understand requirments</label>
                     </div>
                     <button onClick={handleSubmitDecline(declineOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
-                        Cancel Order
+                        Decline Order
                     </button>
                 </div>
             </Popup>
@@ -423,6 +445,23 @@ export const MaidOrders = () => {
                     <button onClick={handleSubmitCancel(cancelOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
                         Cancel Order
                     </button>
+                </div>
+            </Popup>
+            <Popup
+                title="Review Details"
+                open={showReviewPopup}
+                width="w-1/3"
+                close={() => setShowReviewPopup(false)}
+            >
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex justify-between items-center w-full">
+                        <label htmlFor="rating" className="font-PoppinsRegular text-base text-zinc-800 pb-1 pl-1">Rating</label>
+                        <input type="text" disabled {...registerRating("rating", { required: true })} id="rating" placeholder="Enter Full Reason for cancellation" className={"font-PoppinsRegular text-base py-2 mb-2 bg-white w-4"} />
+                    </div>
+                    <div className="flex flex-col w-full">
+                        <label htmlFor="review" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Description</label>
+                        <textarea type="text" disabled {...registerRating("review", { required: true })} id="review" placeholder="Enter Full Reason for cancellation" className={(errors.review ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                    </div>
                 </div>
             </Popup>
             <div className="body-main h-screen bg-violet-200">
