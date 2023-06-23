@@ -12,6 +12,9 @@ export const MaidOrders = () => {
     let [spin, setSpin] = useState(false);
     let [showPopup, setShowPopup] = useState(false)
     let [showDeclinePopup, setShowDeclinePopup] = useState(false)
+    let [showCancelPopup, setShowCancelPopup] = useState(false)
+    let [showCancelDetailPopup, setShowCancelDetailPopup] = useState(false)
+    let [cancelBy, setCancelBy] = useState(false)
     let [orderId, setOrderId] = useState(0)
     let [orderStatusBtn, setOrderStatusBtn] = useState(0)
     let [clientImage, setClientImage] = useState("")
@@ -33,7 +36,8 @@ export const MaidOrders = () => {
     }, [])
 
     const { register, setValue, formState: { errors } } = useForm()
-    const { register: registerDecline, handleSubmit: handleSubmitDecline, setValue: setValueDecline, formState: { errors: errorsDecline } } = useForm()
+    const { register: registerDecline, handleSubmit: handleSubmitDecline } = useForm()
+    const { register: registerCancel, handleSubmit: handleSubmitCancel } = useForm()
 
     const orderStatus = (status) => {
         let slug = ""
@@ -78,6 +82,14 @@ export const MaidOrders = () => {
         setValue("fromDate", object.fromDate)
         setValue("description", object.description)
         setValue("address", object.address)
+        if (object.maidCancel == "" && object.clientCancel != "") {
+            setValue("cancel", object.clientCancel)
+            setCancelBy(false)
+        }
+        else if (object.maidCancel != "" && object.clientCancel == "") {
+            setValue("cancel", object.maidCancel)
+            setCancelBy(true)
+        }
         setShowPopup(true)
     }
 
@@ -178,6 +190,103 @@ export const MaidOrders = () => {
         }
     }
 
+    const completeOrder = async () => {
+        let order = data.filter(x => x.id == orderId)
+        try {
+            const inputDataCopy = { ...order[0] };
+            inputDataCopy.status = 3;
+            const orderDoc = doc(db, "Orders", orderId);
+            await updateDoc(orderDoc, inputDataCopy);
+            setData(
+                produce((draft) => {
+                    const maidData = draft.find((maidData) => maidData.id === orderId);
+                    maidData.status = inputDataCopy.status
+                })
+            )
+            setShowPopup(false)
+            Swal.fire({
+                icon: "success",
+                title: "Order Completed!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#A8C256",
+                confirmButtonColor: "#E0A800",
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Unable to complete order",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });;
+        }
+    }
+
+    const cancelOrder = async (formData) => {
+        let order = data.filter(x => x.id == orderId)
+        try {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3AB0FF",
+                cancelButtonColor: "#F87474",
+                confirmButtonText: "Yes, Cancel it!",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const inputDataCopy = { ...order[0] };
+                    inputDataCopy.status = 5;
+                    inputDataCopy.maidCancel = formData.maidCancel;
+                    const orderDoc = doc(db, "Orders", orderId);
+                    await updateDoc(orderDoc, inputDataCopy);
+                    setData(
+                        produce((draft) => {
+                            const maidData = draft.find((maidData) => maidData.id === orderId);
+                            maidData.status = inputDataCopy.status
+                        })
+                    )
+                    setShowCancelPopup(false)
+                    setShowPopup(false)
+                    Swal.fire({
+                        icon: "success",
+                        title: "Order Canceled!",
+                        toast: true,
+                        showCancelButton: false,
+                        animation: false,
+                        position: "top",
+                        timer: 3000,
+                        showConfirmButton: false,
+                        iconColor: "#000000",
+                        confirmButtonColor: "#E0A800",
+                    });
+                }
+            });
+        } catch (error) {
+            setSpin(false);
+            Swal.fire({
+                icon: "error",
+                title: "Unable to cancel",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#000000",
+            });
+        }
+    }
+
     return (
         <>
             <Spinner isBlinking={false} isSpinner={spin}></Spinner>
@@ -242,15 +351,25 @@ export const MaidOrders = () => {
                                 </button>
                             </div>
                             : orderStatusBtn == 2 ?
-                                <button onClick={() => ""} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
-                                    Cancel Order
-                                </button>
-                                : null
+                                <div className="grid grid-cols-2">
+                                    <button onClick={() => completeOrder()} type="button" className="w-full mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-l">
+                                        Complete Order
+                                    </button>
+                                    <button onClick={() => setShowCancelPopup(true)} type="button" className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-r">
+                                        Cancel Order
+                                    </button>
+                                </div>
+                                : orderStatusBtn == 5 ?
+                                    <div className="font-PoppinsRegular w-full flex justify-center items-center p-2">
+                                        Order Canceled by {cancelBy == true ? "You" : "Client"} &nbsp;
+                                        <button onClick={() => setShowCancelDetailPopup(true)} type="button" className="text-primary-0">See Reason</button>
+                                    </div>
+                                    : null
                     }
                 </div>
             </Popup>
             <Popup
-                title="Cancel Order"
+                title="Decline Order"
                 open={showDeclinePopup}
                 width="w-1/3"
                 close={() => setShowDeclinePopup(false)}
@@ -273,6 +392,35 @@ export const MaidOrders = () => {
                         <label htmlFor="d" className="font-PoppinsRegular text-sm text-zinc-800 w-full">Unable to understand requirments</label>
                     </div>
                     <button onClick={handleSubmitDecline(declineOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
+                        Cancel Order
+                    </button>
+                </div>
+            </Popup>
+            <Popup
+                title="Cancel Order"
+                open={showCancelDetailPopup}
+                width="w-1/3"
+                close={() => setShowCancelDetailPopup(false)}
+            >
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col w-full">
+                        <label htmlFor="cancel" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Reason</label>
+                        <textarea disabled type="text" {...register("cancel", { required: true })} id="cancel" placeholder="Enter Full Reason for cancellation" className={(errors.cancel ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                    </div>
+                </div>
+            </Popup>
+            <Popup
+                title="Cancel Order"
+                open={showCancelPopup}
+                width="w-1/3"
+                close={() => setShowCancelPopup(false)}
+            >
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col w-full">
+                        <label htmlFor="maidCancel" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Reason</label>
+                        <textarea type="text" {...registerCancel("maidCancel", { required: true })} id="maidCancel" placeholder="Enter Full Reason for cancellation" className={(errors.maidCancel ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                    </div>
+                    <button onClick={handleSubmitCancel(cancelOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
                         Cancel Order
                     </button>
                 </div>

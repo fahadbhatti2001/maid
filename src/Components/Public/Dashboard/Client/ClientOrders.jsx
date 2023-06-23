@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { db } from "@/FirebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { UseUserAuth, Popup, Spinner } from "@/Components"
 import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import produce from 'immer';
 export const ClientOrders = () => {
 
   let [data, setData] = useState([])
   let [maidData, setMaidData] = useState([])
   let [spin, setSpin] = useState(false);
   let [showPopup, setShowPopup] = useState(false)
+  let [maidImage, setMaidImage] = useState("")
+  let [orderId, setOrderId] = useState(0)
+  let [showCancelPopup, setShowCancelPopup] = useState(false)
+  let [showCancelDetailPopup, setShowCancelDetailPopup] = useState(false)
+  let [cancelBy, setCancelBy] = useState(false)
+  let [orderStatusBtn, setOrderStatusBtn] = useState(0)
 
   const ordersRef = collection(db, "Orders")
   const maidRef = collection(db, "Maids")
@@ -27,6 +35,8 @@ export const ClientOrders = () => {
   }, [])
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm()
+  const { register: registerCancel, handleSubmit: handleSubmitCancel } = useForm()
+
 
   const orderStatus = (status) => {
     let slug = ""
@@ -59,14 +69,83 @@ export const ClientOrders = () => {
   }
 
   const showOrderDetail = (object) => {
+    setOrderId(object.id)
+    setOrderStatusBtn(object.status)
+    let maid = maidData.filter(x => x.id == object.mid)
+    setMaidImage(maid[0].image)
+    setValue("name", `${maid[0].fname} ${maid[0].lname}`)
+    setValue("email", maid[0].email)
+    setValue("phone", maid[0].phone)
     setValue("price", object.price)
     setValue("toDate", object.toDate)
     setValue("fromData", object.fromDate)
     setValue("description", object.description)
     setValue("address", object.address)
-    let maid = maidData.filter(x => x.id == object.mid)
-    console.log(maid)
+    if (object.maidCancel != "" && object.clientCancel == "") {
+      setValue("cancel", object.maidCancel)
+      setCancelBy(false)
+    }
+    else if (object.maidCancel == "" && object.clientCancel != "") {
+      setValue("cancel", object.clientCancel)
+      setCancelBy(true)
+    }
     setShowPopup(true)
+  }
+
+  const cancelOrder = async (formData) => {
+    let order = data.filter(x => x.id == orderId)
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3AB0FF",
+        cancelButtonColor: "#F87474",
+        confirmButtonText: "Yes, Cancel it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const inputDataCopy = { ...order[0] };
+          inputDataCopy.status = 5;
+          inputDataCopy.clientCancel = formData.clientCancel;
+          const orderDoc = doc(db, "Orders", orderId);
+          await updateDoc(orderDoc, inputDataCopy);
+          setData(
+            produce((draft) => {
+              const maidData = draft.find((maidData) => maidData.id === orderId);
+              maidData.status = inputDataCopy.status
+            })
+          )
+          setShowCancelPopup(false)
+          setShowPopup(false)
+          Swal.fire({
+            icon: "success",
+            title: "Order Canceled!",
+            toast: true,
+            showCancelButton: false,
+            animation: false,
+            position: "top",
+            timer: 3000,
+            showConfirmButton: false,
+            iconColor: "#000000",
+            confirmButtonColor: "#E0A800",
+          });
+        }
+      });
+    } catch (error) {
+      setSpin(false);
+      Swal.fire({
+        icon: "error",
+        title: "Unable to cancel",
+        toast: true,
+        showCancelButton: false,
+        animation: false,
+        position: "top",
+        timer: 3000,
+        showConfirmButton: false,
+        iconColor: "#000000",
+      });
+    }
   }
 
   return (
@@ -79,70 +158,87 @@ export const ClientOrders = () => {
         close={() => setShowPopup(false)}
       >
         <div className="">
-          <div className="">
-            <div className="flex flex-col w-full">
-              <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
-                <div className="flex flex-col w-full">
-                  <label htmlFor="fname" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">First Name</label>
-                  <input type="text" {...register("fname", { required: true })} id="fname" placeholder="Enter your First Name" className={(errors.fname ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
-                </div>
-                <div className="flex flex-col w-full">
-                  <label htmlFor="lname" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Last Name</label>
-                  <input type="text" {...register("lname", { required: true })} id="lname" placeholder="Enter your Last Name" className={(errors.lname ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
-                </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="col-span-1 flex flex-col w-full mt-px">
+              <div className="flex justify-center items-center my-4">
+                <img src={maidImage} className="h-40 w-40 object-cover rounde-md" />
               </div>
-              <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
-                <div className="flex flex-col w-full">
-                  <label htmlFor="phone" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Phone Number</label>
-                  <input type="number" {...register("phone", { required: true })} id="phone" placeholder="Enter your Phone Number" className={(errors.phone ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
-                </div>
-                <div className="flex flex-col w-full">
-                  <label htmlFor="age" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Age</label>
-                  <input type="number" {...register("age", { required: true })} id="age" placeholder="Enter your Age" className={(errors.age ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
-                </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="name" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Name</label>
+                <input disabled type="text" {...register("name", { required: true })} id="name" className={(errors.name ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
               </div>
-              <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
-                <div className="flex flex-col w-full">
-                  <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
-                  <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
-                </div>
-                <div className="flex flex-col gap-2 w-full">
-                  <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
-                  <div className="flex gap-2 items-center">
-                    <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800">Male</label>
-                    <input type="radio" {...register("gender")} value="male" />
-                    <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800">Female</label>
-                    <input type="radio" {...register("gender")} value="female" />
-                  </div>
-                </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="email" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Email</label>
+                <input disabled type="text" {...register("email", { required: true })} id="email" className={(errors.email ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="phone" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Phone</label>
+                <input disabled type="text" {...register("phone", { required: true })} id="phone" placeholder="No Phone Number" className={(errors.phone ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
               </div>
             </div>
-            <div className="flex flex-col gap-0">
+            <div className="col-span-2 flex flex-col gap-0">
               <div className="flex flex-col w-full">
                 <label htmlFor="price" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Price</label>
-                <input disabled type="number" min={100} {...register("price", { required: true })} id="price" placeholder="Enter your Price" className={(errors.price ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                <input disabled type="number" min={100} {...register("price", { required: true })} id="price" placeholder="Enter your Price" className={(errors.price ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col">
                   <label htmlFor="toDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">To</label>
-                  <input disabled type="date" {...register("toDate", { required: true })} id="toDate" className={(errors.toDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                  <input disabled type="date" {...register("toDate", { required: true })} id="toDate" className={(errors.toDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
                 </div>
                 <div className="flex flex-col">
                   <label htmlFor="fromDate" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">From</label>
-                  <input disabled type="date" {...register("fromDate", { required: true })} id="fromDate" className={(errors.fromDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                  <input disabled type="date" {...register("fromDate", { required: true })} id="fromDate" className={(errors.fromDate ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
                 </div>
               </div>
               <div className="flex flex-col w-full">
                 <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Address</label>
-                <input disabled type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0"} />
+                <input disabled type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0"} />
               </div>
               <div className="flex flex-col w-full">
                 <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Description</label>
-                <textarea disabled type="text" {...register("description", { required: true })} id="description" placeholder="Enter Full Description" className={(errors.description ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-xs focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+                <textarea disabled type="text" {...register("description", { required: true })} id="description" placeholder="Enter Full Description" className={(errors.description ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
               </div>
             </div>
           </div>
-          <button onClick={() => ""} type="button" className="w-full mt-2 bg-primary-0 hover:bg-transparent border-2 border-primary-0 transition-all duration-75 text-white hover:text-primary-0 px-4 py-1 rounded">
+          {
+            orderStatusBtn == 5 ?
+              <div className="font-PoppinsRegular w-full flex justify-center items-center p-2">
+                Order Canceled by {cancelBy == true ? "You" : "Maid"} &nbsp;
+                <button onClick={() => setShowCancelDetailPopup(true)} type="button" className="text-primary-0">See Reason</button>
+              </div>
+              :
+              <button onClick={() => setShowCancelPopup(true)} type="button" className="w-full mt-2 bg-primary-0 hover:bg-transparent border-2 border-primary-0 transition-all duration-75 text-white hover:text-primary-0 px-4 py-1 rounded">
+                Cancel Order
+              </button>
+          }
+        </div>
+      </Popup>
+      <Popup
+        title="Cancel Order"
+        open={showCancelDetailPopup}
+        width="w-1/3"
+        close={() => setShowCancelDetailPopup(false)}
+      >
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col w-full">
+            <label htmlFor="cancel" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Reason</label>
+            <textarea disabled type="text" {...register("cancel", { required: true })} id="cancel" placeholder="Enter Full Reason for cancellation" className={(errors.cancel ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+          </div>
+        </div>
+      </Popup>
+      <Popup
+        title="Cancel Order"
+        open={showCancelPopup}
+        width="w-1/3"
+        close={() => setShowCancelPopup(false)}
+      >
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col w-full">
+            <label htmlFor="clientCancel" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Reason</label>
+            <textarea type="text" {...registerCancel("clientCancel", { required: true })} id="clientCancel" placeholder="Enter Full Reason for cancellation" className={(errors.clientCancel ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+          </div>
+          <button onClick={handleSubmitCancel(cancelOrder)} type="button" className="w-full mt-2 bg-primary-0 text-white px-4 py-1 rounded">
             Cancel Order
           </button>
         </div>
