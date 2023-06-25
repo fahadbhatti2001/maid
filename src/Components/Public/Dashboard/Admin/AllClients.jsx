@@ -112,7 +112,17 @@ export const AllClients = () => {
         setSpin(false)
       }
     } catch (error) {
-      console.log("error")
+      Swal.fire({
+        icon: "error",
+        title: "Unable to update",
+        toast: true,
+        showCancelButton: false,
+        animation: false,
+        position: "top",
+        timer: 3000,
+        showConfirmButton: false,
+        iconColor: "#C33149",
+    });
     }
   }
 

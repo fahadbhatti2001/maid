@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ManageProfile } from './ManageProfile';
 import { Reviews } from './Reviews';
 import { MaidOrders } from './MaidOrders';
+import Swal from 'sweetalert2';
 
 export const MaidDashboard = () => {
 
@@ -22,7 +23,17 @@ export const MaidDashboard = () => {
             await logOut();
             navigate("/");
         } catch (error) {
-            console.log("error");
+            Swal.fire({
+                icon: "error",
+                title: "Unable to logout",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });
         }
     };
 

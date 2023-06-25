@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { db } from "@/FirebaseConfig";
 import { addDoc, collection, doc, getDoc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import { faCircleLeft } from '@fortawesome/free-regular-svg-icons';
+import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar, faMapMarkerAlt, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faCircleLeft, faFlag } from '@fortawesome/free-regular-svg-icons';
 import { UseUserAuth, Popup, Spinner } from "@/Components"
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
@@ -112,6 +112,35 @@ export const FindMaid = () => {
     }
   }
 
+  const calculateRating = (array) => {
+    if (array != undefined) {
+      if (array.length != 0) {
+        const arraySum = array.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        const arrayLength = array.length
+        const average = arraySum / arrayLength
+        return average.toFixed(1)
+      }
+      else {
+        return "N/A"
+      }
+    }
+  }
+
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const filtered =
+    data == undefined
+      ? []
+      : data.filter((e) => {
+        const query = searchQuery.toLowerCase()
+        return (
+          e.fname.toLowerCase().includes(query) ||
+          e.lname.toLowerCase().includes(query) ||
+          e.email.toLowerCase().includes(query) ||
+          e.experience.toLowerCase().includes(query) ||
+          e.address.toLowerCase().includes(query)
+        )
+      })
 
   return (
     <>
@@ -157,9 +186,30 @@ export const FindMaid = () => {
         {
           isShow ?
             <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
+              <div className="flex justify-between gap-4 relative mb-4">
+                <div className="">
+                  <select onChange={(e) => setSearchQuery(e.target.value)} className="font-PoppinsRegular text-sm p-1 border rounded shadow-sm w-44">
+                    <option className="bg-white text-zinc-700" value="">All</option>
+                    <option className="bg-white text-zinc-700" value="lessthanone">Less then 1 Year</option>
+                    <option className="bg-white text-zinc-700" value="oneyear">1 Year</option>
+                    <option className="bg-white text-zinc-700" value="twotothree">2 - 3 Years</option>
+                    <option className="bg-white text-zinc-700" value="fourtofive">4 - 5 Years</option>
+                    <option className="bg-white text-zinc-700" value="fiveabove">Above then 5 Years</option>
+                  </select>
+                </div>
+                <div className="border border-zinc-400 rounded md:w-auto w-full flex items-center px-2 z-10">
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="bg-transparent text-sm placeholder-zinc-500 text-zinc-600 focus:outline-none px-2 md:py-1 py-2"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
               <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {
-                  data == undefined ? null : data.map((e, i) => e.approve == true ? (
+                  filtered.map((e, i) => e.approve == true ? (
                     <button onClick={() => setDataToShow(e.id)} type="button" key={i} className="col-span-1 bg-white p-2 rounded flex flex-col justify-center items-center border">
                       <img src={e.image} className="w-full h-48 object-cover rounded-t" />
                       <div className="w-full flex flex-col items-start mt-2 gap-1">
@@ -185,7 +235,7 @@ export const FindMaid = () => {
                           </div>
                           <div className="flex items-center gap-1 text-amber-500">
                             <FontAwesomeIcon icon={faStar} className="text-xs" />
-                            <p className="font-PoppinsMedium text-sm">5.0</p>
+                            <p className="font-PoppinsMedium text-sm">{calculateRating(e.rate)}</p>
                           </div>
                         </div>
                       </div>
@@ -196,10 +246,16 @@ export const FindMaid = () => {
             </div>
             :
             <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
-              <button onClick={() => setIsShow(true)} className="flex items-center gap-2 text-base text-zinc-700 mb-2">
-                <FontAwesomeIcon icon={faCircleLeft} />
-                Back
-              </button>
+              <div className="w-full flex justify-between items-center">
+                <button onClick={() => setIsShow(true)} className="flex items-center gap-2 text-base text-zinc-700 mb-2">
+                  <FontAwesomeIcon icon={faCircleLeft} />
+                  Back
+                </button>
+                <button onClick={() => setIsShow(true)} className="flex items-center gap-2 text-sm text-primary-0 mb-2 rounded-full px-4 border border-primary-0 hover:bg-primary-0 hover:text-white transition duration-75 ease-in-out">
+                  <FontAwesomeIcon icon={faFlag} />
+                  Report
+                </button>
+              </div>
               <div className="bg-white rounded p-4 flex md:flex-row flex-col justify-between items-center">
                 <div className="flex md:flex-row flex-col items-center gap-4">
                   <img src={showData.image} className="w-40 h-40 object-cover rounded-lg" />
@@ -224,7 +280,7 @@ export const FindMaid = () => {
                   </p>
                   <p className="text-base font-PoppinsMedium grid grid-cols-2 text-gray-700">
                     <span className="font-PoppinsSemiBold">Rating: </span>
-                    <span className="text-right">5.0</span>
+                    <span className="text-right">{calculateRating(showData.rate)}</span>
                   </p>
                   <button onClick={() => hireMaid(showData.id)} type="button" className="w-full mt-2 bg-primary-0 hover:bg-transparent border-2 border-primary-0 transition-all duration-75 text-white hover:text-primary-0 px-4 py-1 rounded">
                     Hire
@@ -263,42 +319,29 @@ export const FindMaid = () => {
                   </h1>
                 </div>
               </div>
-              {/* <div className=" grid md:grid-cols-3 grid-cols-1 gap-4 w-full mt-4">
-                <div className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white">
-                  <div className="flex items-center gap-2 w-full px-4">
-                    <img src="/images/profile.png" className="w-20 h-20 rounded-full object-cover" />
-                    <div className="text-gray-700">
-                      <h1 className="text-lg font-PoppinsSemiBold">
-                        Fahad Bhatti
-                      </h1>
-                      <div className="flex items-center gap-1 w-full text-amber-500">
-                        <FontAwesomeIcon icon={faStar} className="text-xs" />
-                        <p className="font-PoppinsMedium  text-sm">5.0</p>
+              <div className=" grid md:grid-cols-3 grid-cols-1 gap-4 w-full mt-4">
+                {
+                  showData.reviews.map((e, i) => (
+                    <div key={i} className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white overflow-auto h-60">
+                      <div className="flex items-center gap-2 w-full px-4">
+                        <img src={e.image} className="w-20 h-20 rounded-full object-cover" />
+                        <div className="text-gray-700">
+                          <h1 className="text-lg font-PoppinsSemiBold">
+                            {e.name}
+                          </h1>
+                          <div className="flex items-center gap-1 w-full text-amber-500">
+                            <FontAwesomeIcon icon={faStar} className="text-xs" />
+                            <p className="font-PoppinsMedium  text-sm">{e.rating}</p>
+                          </div>
+                        </div>
                       </div>
+                      <p className="font-PoppinsRegular text-sm px-4 text-gray-700 text-left w-full">
+                        {e.review}
+                      </p>
                     </div>
-                  </div>
-                  <p className="font-PoppinsRegular text-sm px-4 text-gray-700">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Et, dolores quisquam voluptas illo laboriosam dicta eos autem natus labore aspernatur sed ipsa. Optio, cupiditate amet! Similique nostrum deserunt earum necessitatibus?
-                  </p>
-                </div>
-                <div className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white">
-                  <div className="flex items-center gap-2 w-full px-4">
-                    <img src="/images/profile.png" className="w-20 h-20 rounded-full object-cover" />
-                    <div className="text-gray-700">
-                      <h1 className="text-lg font-PoppinsSemiBold">
-                        Fahad Bhatti
-                      </h1>
-                      <div className="flex items-center gap-1 w-full text-amber-500">
-                        <FontAwesomeIcon icon={faStar} className="text-xs" />
-                        <p className="font-PoppinsMedium  text-sm">5.0</p>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="font-PoppinsRegular text-sm px-4 text-gray-700">
-                    Lorem ipsum dol! Similique nostrum deserunt earum necessitatibus?
-                  </p>
-                </div>
-              </div> */}
+                  ))
+                }
+              </div>
             </div>
         }
       </div>

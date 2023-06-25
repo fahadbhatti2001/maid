@@ -5,6 +5,7 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Spinner } from '@/Components'
 import produce from 'immer';
+import Swal from 'sweetalert2';
 
 export const ManageProfile = () => {
 
@@ -88,8 +89,30 @@ export const ManageProfile = () => {
                 setIsEdit(true)
                 setSpin(false)
             }
+            Swal.fire({
+                icon: "success",
+                title: "Update Successfully!",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#A8C256",
+                confirmButtonColor: "#E0A800",
+            });
         } catch (error) {
-            console.log("error")
+            Swal.fire({
+                icon: "error",
+                title: "Unable to update",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });
         }
     }
 

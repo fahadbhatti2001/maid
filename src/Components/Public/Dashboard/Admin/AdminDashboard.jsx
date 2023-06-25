@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { UseUserAuth } from '@/Components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff, faBroom, faUser, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faPowerOff, faBroom, faUser, faMagnifyingGlass, faFlag } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import { AllClients } from './AllClients';
 import { AllMaids } from './AllMaids';
+import { AllComplians } from './AllComplians';
+import Swal from 'sweetalert2';
 
 export const AdminDashboard = () => {
 
     const navigate = useNavigate()
 
-    let [ showAllClients, setShowAllClients ] = useState(true)
-    let [ showAllMaids, setShowAllMaids ] = useState(false)
+    let [showAllClients, setShowAllClients] = useState(true)
+    let [showAllMaids, setShowAllMaids] = useState(false)
+    let [showAllComplians, setShowAllComplians] = useState(false)
 
     const { logOut } = UseUserAuth();
 
@@ -20,11 +23,21 @@ export const AdminDashboard = () => {
             await logOut();
             navigate("/")
         } catch (error) {
-            console.log("error")
+            Swal.fire({
+                icon: "error",
+                title: "Unable to logout",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });
         }
     };
 
-  return (
+    return (
         <>
             <div className="w-full flex justify-between">
                 <div className="body-sidebar p-4 h-screen flex flex-col justify-between content-between">
@@ -36,17 +49,23 @@ export const AdminDashboard = () => {
                             </p>
                         </h1>
                         <div className="py-4 w-full">
-                            <button onClick={() => {setShowAllClients(true), setShowAllMaids(false)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                            <button onClick={() => { setShowAllClients(true), setShowAllMaids(false), setShowAllComplians(false) }} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
                                 <p className="md:block hidden">
                                     Clients
                                 </p>
-                                <FontAwesomeIcon icon={faUser} className="md:hidden inline-block md:text-base text-2xl"/>
+                                <FontAwesomeIcon icon={faUser} className="md:hidden inline-block md:text-base text-2xl" />
                             </button>
-                            <button onClick={() => {setShowAllClients(false), setShowAllMaids(true)}} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                            <button onClick={() => { setShowAllClients(false), setShowAllMaids(true), setShowAllComplians(false) }} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
                                 <p className="md:block hidden">
                                     Maids
                                 </p>
-                                <FontAwesomeIcon icon={faMagnifyingGlass} className="md:hidden inline-block md:text-base text-2xl"/>
+                                <FontAwesomeIcon icon={faMagnifyingGlass} className="md:hidden inline-block md:text-base text-2xl" />
+                            </button>
+                            <button onClick={() => { setShowAllClients(false), setShowAllMaids(false), setShowAllComplians(true) }} className="text-gray-700 md:p-4 p-0 md:py-4 py-6 w-full md:text-left text-center font-bold md:hover:bg-gray-300 hover:bg-transparent transition ease-in-out" type="button">
+                                <p className="md:block hidden">
+                                    Complains
+                                </p>
+                                <FontAwesomeIcon icon={faFlag} className="md:hidden inline-block md:text-base text-2xl" />
                             </button>
                         </div>
                     </div>
@@ -58,11 +77,12 @@ export const AdminDashboard = () => {
                     </button>
                 </div>
                 {
-                    showAllClients ? <AllClients/> :  
-                    showAllMaids ? <AllMaids/> :  
-                    null
+                    showAllClients ? <AllClients /> :
+                        showAllMaids ? <AllMaids /> :
+                            showAllComplians ? <AllComplians /> :
+                                null
                 }
             </div>
         </>
-  )
+    )
 }

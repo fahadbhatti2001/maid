@@ -5,12 +5,14 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBucket, faShirt, faBowlFood, faBabyCarriage, faSink, faStar } from '@fortawesome/free-solid-svg-icons';
-import { Spinner } from '@/Components'
+import { Spinner, UseUserAuth } from '@/Components'
 import produce from 'immer';
+import Swal from 'sweetalert2';
 
 export const ManageProfile = () => {
 
-    let [data, setData] = useState()
+    let [data, setData] = useState([])
+    let [dataReview, setDataReview] = useState([])
     let [image, setImage] = useState(null)
     let [isImage, setIsImage] = useState(null)
     let [isUpdatedImage, setIsUpdatedImage] = useState(null)
@@ -19,12 +21,23 @@ export const ManageProfile = () => {
 
     let imageName = new Date().getTime();
 
+    const maidsRef = collection(db, "Maids");
+
     const getData = async () => {
-        const maidsRef = collection(db, "Maids")
-        const maidData = await getDocs(maidsRef)
-        let maid = maidData.docs.filter(x => x.id == auth.lastNotifiedUid)
-        setData(maid[0]._document.data.value.mapValue.fields)
+        const querySnapshot = await getDocs(maidsRef);
+        const maidData = [];
+        querySnapshot.forEach((doc) => {
+            if (doc.id == auth.lastNotifiedUid) {
+                maidData.push({ id: doc.id, ...doc.data() });
+            }
+        });
+        setData(maidData[0]);
+        setDataReview(maidData[0].reviews);
     };
+
+    useEffect(() => {
+        getData();
+    }, []);
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm()
 
@@ -35,22 +48,22 @@ export const ManageProfile = () => {
     }
 
     function setDataToUpdate() {
-        setValue("fname", data.fname.stringValue)
-        setValue("lname", data.lname.stringValue)
-        setValue("address", data.address.stringValue)
-        setValue("phone", data.phone.stringValue)
-        setValue("age", data.age.stringValue)
-        setValue("gender", data.gender.stringValue)
-        setValue("bank", data.bank.stringValue)
-        setValue("accountNo", data.accountNo.stringValue)
-        setValue("experience", data.experience.stringValue)
-        setValue("floor", data.floor.booleanValue)
-        setValue("cloth", data.cloth.booleanValue)
-        setValue("meal", data.meal.booleanValue)
-        setValue("child", data.child.booleanValue)
-        setValue("kitchen", data.kitchen.booleanValue)
-        setIsUpdatedImage(data.image.stringValue)
-        setImage(data.image.stringValue)
+        setValue("fname", data.fname)
+        setValue("lname", data.lname)
+        setValue("address", data.address)
+        setValue("phone", data.phone)
+        setValue("age", data.age)
+        setValue("gender", data.gender)
+        setValue("bank", data.bank)
+        setValue("accountNo", data.accountNo)
+        setValue("experience", data.experience)
+        setValue("floor", data.floor)
+        setValue("cloth", data.cloth)
+        setValue("meal", data.meal)
+        setValue("child", data.child)
+        setValue("kitchen", data.kitchen)
+        setIsUpdatedImage(data.image)
+        setImage(data.image)
         setIsEdit(false)
     }
 
@@ -69,21 +82,21 @@ export const ManageProfile = () => {
                         await updateDoc(maidDoc, inputDataCopy);
                         setData(
                             produce((draft) => {
-                                draft.image.stringValue = url
-                                draft.fname.stringValue = updatedData.fname
-                                draft.lname.stringValue = updatedData.lname
-                                draft.address.stringValue = updatedData.address
-                                draft.phone.stringValue = updatedData.phone
-                                draft.age.stringValue = updatedData.age
-                                draft.gender.stringValue = updatedData.gender
-                                draft.bank.stringValue = updatedData.bank
-                                draft.accountNo.stringValue = updatedData.accountNo
-                                draft.experience.stringValue = updatedData.experience
-                                draft.floor.booleanValue = updatedData.floor
-                                draft.cloth.booleanValue = updatedData.cloth
-                                draft.meal.booleanValue = updatedData.meal
-                                draft.child.booleanValue = updatedData.child
-                                draft.kitchen.booleanValue = updatedData.kitchen
+                                draft.image = url
+                                draft.fname = updatedData.fname
+                                draft.lname = updatedData.lname
+                                draft.address = updatedData.address
+                                draft.phone = updatedData.phone
+                                draft.age = updatedData.age
+                                draft.gender = updatedData.gender
+                                draft.bank = updatedData.bank
+                                draft.accountNo = updatedData.accountNo
+                                draft.experience = updatedData.experience
+                                draft.floor = updatedData.floor
+                                draft.cloth = updatedData.cloth
+                                draft.meal = updatedData.meal
+                                draft.child = updatedData.child
+                                draft.kitchen = updatedData.kitchen
                             })
                         )
                     })
@@ -95,35 +108,53 @@ export const ManageProfile = () => {
                 await updateDoc(maidDoc, updatedData);
                 setData(
                     produce((draft) => {
-                        draft.fname.stringValue = updatedData.fname
-                        draft.lname.stringValue = updatedData.lname
-                        draft.address.stringValue = updatedData.address
-                        draft.phone.stringValue = updatedData.phone
-                        draft.age.stringValue = updatedData.age
-                        draft.bank.stringValue = updatedData.bank
-                        draft.accountNo.stringValue = updatedData.accountNo
-                        draft.gender.stringValue = updatedData.gender
-                        draft.experience.stringValue = updatedData.experience
-                        draft.floor.booleanValue = updatedData.floor
-                        draft.cloth.booleanValue = updatedData.cloth
-                        draft.meal.booleanValue = updatedData.meal
-                        draft.child.booleanValue = updatedData.child
-                        draft.kitchen.booleanValue = updatedData.kitchen
+                        draft.fname = updatedData.fname
+                        draft.lname = updatedData.lname
+                        draft.address = updatedData.address
+                        draft.phone = updatedData.phone
+                        draft.age = updatedData.age
+                        draft.bank = updatedData.bank
+                        draft.accountNo = updatedData.accountNo
+                        draft.gender = updatedData.gender
+                        draft.experience = updatedData.experience
+                        draft.floor = updatedData.floor
+                        draft.cloth = updatedData.cloth
+                        draft.meal = updatedData.meal
+                        draft.child = updatedData.child
+                        draft.kitchen = updatedData.kitchen
                     })
                 )
                 setIsEdit(true)
                 setSpin(false)
             }
         } catch (error) {
-            console.log("error")
+            Swal.fire({
+                icon: "error",
+                title: "Unable to update",
+                toast: true,
+                showCancelButton: false,
+                animation: false,
+                position: "top",
+                timer: 3000,
+                showConfirmButton: false,
+                iconColor: "#C33149",
+            });
         }
     }
 
-    useEffect(() => {
-        getData();
-    }, [])
-
-    console.log(data == undefined ? null : (data.arrayValue == null ? [] : (data.reviews.arrayValue == {} ? [] : data.reviews.arrayValue.values)))
+    const calculateRating = (array) => {
+        if (array != undefined) {
+            if (array.length != 0) {
+                const arraySum = array.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+                const arrayLength = array.length
+                const average = arraySum / arrayLength
+                return average.toFixed(1)
+            }
+            else {
+                return "N/A"
+            }
+        }
+    }
 
     return (
         <>
@@ -137,29 +168,29 @@ export const ManageProfile = () => {
                         <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
                             <div className="bg-white rounded p-4 flex md:flex-row flex-col justify-between items-center">
                                 <div className="flex md:flex-row flex-col items-center gap-4">
-                                    <img src={data == undefined ? "" : data.image.stringValue} className="w-40 h-40 object-cover rounded-lg" />
+                                    <img src={data == undefined ? "" : data.image} className="w-40 h-40 object-cover rounded-lg" />
                                     <div className="md:text-left text-center">
                                         <h1 className="text-2xl font-PoppinsSemiBold text-gray-700">
-                                            {data == undefined ? "" : data.fname.stringValue} {data == undefined ? "" : data.lname.stringValue}
+                                            {data == undefined ? "" : data.fname} {data == undefined ? "" : data.lname}
                                         </h1>
                                         <p className="text-base font-PoppinsRegular text-gray-700">
-                                            {data == undefined ? "" : data.email.stringValue}
+                                            {data == undefined ? "" : data.email}
                                         </p>
                                         <p className="text-base font-PoppinsRegular text-gray-700">
-                                            {data == undefined ? "" : data.address.stringValue}
+                                            {data == undefined ? "" : data.address}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="md:w-auto w-full">
                                     <p className="text-base font-PoppinsMedium grid grid-cols-2 text-gray-700">
                                         <span className="font-PoppinsSemiBold">Status: </span>
-                                        <span className={"text-right " + (data == undefined ? "" : data.approve.booleanValue == false ? "text-red-600" : data.approve.booleanValue == true ? "text-green-600" : "text-yellow-600")}>
-                                            {data == undefined ? "" : data.approve.booleanValue == false ? "Unsatisfied" : data.approve.booleanValue == true ? "Satisfactory" : "Under Supervision"}
+                                        <span className={"text-right " + (data == undefined ? "" : data.approve == false ? "text-red-600" : data.approve == true ? "text-green-600" : "text-yellow-600")}>
+                                            {data == undefined ? "" : data.approve == false ? "Unsatisfied" : data.approve == true ? "Satisfactory" : "Under Supervision"}
                                         </span>
                                     </p>
                                     <p className="text-base font-PoppinsMedium grid grid-cols-2 text-gray-700">
                                         <span className="font-PoppinsSemiBold">Rating: </span>
-                                        <span className="text-right">5.0</span>
+                                        <span className="text-right">{calculateRating(data == undefined ? [0] : data.rate)}</span>
                                     </p>
                                     <button onClick={() => setDataToUpdate()} className="text-center w-full border-2 border-primary-0  rounded-full mt-2" type="button">
                                         Update Profile
@@ -167,31 +198,31 @@ export const ManageProfile = () => {
                                 </div>
                             </div>
                             <div className=" grid lg:grid-cols-5 md:grid-cols-3 grid-cols-1 gap-4 w-full mt-4">
-                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.floor.booleanValue == false ? "opacity-40" : "opacity-100")}>
+                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.floor == false ? "opacity-40" : "opacity-100")}>
                                     <FontAwesomeIcon icon={faBucket} className="text-4xl" />
                                     <h1 className="text-xl">
                                         Floor Cleaning
                                     </h1>
                                 </div>
-                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.cloth.booleanValue == false ? "opacity-40" : "opacity-100")}>
+                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.cloth == false ? "opacity-40" : "opacity-100")}>
                                     <FontAwesomeIcon icon={faShirt} className="text-4xl" />
                                     <h1 className="text-xl">
                                         Cloth Washing
                                     </h1>
                                 </div>
-                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.meal.booleanValue == false ? "opacity-40" : "opacity-100")}>
+                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.meal == false ? "opacity-40" : "opacity-100")}>
                                     <FontAwesomeIcon icon={faBowlFood} className="text-4xl" />
                                     <h1 className="text-xl">
                                         Meal Cooking
                                     </h1>
                                 </div>
-                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.child.booleanValue == false ? "opacity-40" : "opacity-100")}>
+                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.child == false ? "opacity-40" : "opacity-100")}>
                                     <FontAwesomeIcon icon={faBabyCarriage} className="text-4xl" />
                                     <h1 className="text-xl">
                                         Child Care
                                     </h1>
                                 </div>
-                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.kitchen.booleanValue == false ? "opacity-40" : "opacity-100")}>
+                                <div className={"col-span-1 flex flex-col gap-4 justify-center items-center h-40 rounded-lg shadow bg-white text-primary-0 " + (data == undefined ? "" : data.kitchen == false ? "opacity-40" : "opacity-100")}>
                                     <FontAwesomeIcon icon={faSink} className="text-4xl" />
                                     <h1 className="text-xl">
                                         Kitchen Handling
@@ -199,30 +230,28 @@ export const ManageProfile = () => {
                                 </div>
                             </div>
                             <div className=" grid md:grid-cols-3 grid-cols-1 gap-4 w-full mt-4">
-                                {/* {
-                                    data == undefined ? null :
-                                        (data.arrayValue == null ? [] :
-                                            (data.reviews.arrayValue == {} ? [] :
-                                                data.reviews.arrayValue.values)).map((e, i) => (
-                                                    <div key={i} className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white">
-                                                        <div className="flex items-center gap-2 w-full px-4">
-                                                            <img src={e.mapValue.fields.image.stringValue} className="w-20 h-20 rounded-full object-cover" />
-                                                            <div className="text-gray-700">
-                                                                <h1 className="text-lg font-PoppinsSemiBold">
-                                                                    {e.mapValue.fields.name.stringValue}
-                                                                </h1>
-                                                                <div className="flex items-center gap-1 w-full text-amber-500">
-                                                                    <FontAwesomeIcon icon={faStar} className="text-xs" />
-                                                                    <p className="font-PoppinsMedium  text-sm">{e.mapValue.fields.rating.stringValue}</p>
-                                                                </div>
-                                                            </div>
+                                {
+                                    dataReview == undefined ? null :
+                                        dataReview.map((e, i) => (
+                                            <div key={i} className="col-span-1 py-4 flex flex-col gap-4 items-center rounded-lg shadow bg-white overflow-auto h-60">
+                                                <div className="flex items-center gap-2 w-full px-4">
+                                                    <img src={e.image} className="w-20 h-20 rounded-full object-cover" />
+                                                    <div className="text-gray-700">
+                                                        <h1 className="text-lg font-PoppinsSemiBold">
+                                                            {e.name}
+                                                        </h1>
+                                                        <div className="flex items-center gap-1 w-full text-amber-500">
+                                                            <FontAwesomeIcon icon={faStar} className="text-xs" />
+                                                            <p className="font-PoppinsMedium  text-sm">{e.rating}</p>
                                                         </div>
-                                                        <p className="font-PoppinsRegular text-sm px-4 text-gray-700 text-left w-full">
-                                                            {e.mapValue.fields.review.stringValue}
-                                                        </p>
                                                     </div>
-                                                ))
-                                } */}
+                                                </div>
+                                                <p className="font-PoppinsRegular text-sm px-4 text-gray-700 text-left w-full">
+                                                    {e.review}
+                                                </p>
+                                            </div>
+                                        ))
+                                }
                             </div>
                         </div>
                         :

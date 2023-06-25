@@ -235,7 +235,7 @@ export const MaidOrders = () => {
                 timer: 3000,
                 showConfirmButton: false,
                 iconColor: "#C33149",
-            });;
+            });
         }
     }
 
