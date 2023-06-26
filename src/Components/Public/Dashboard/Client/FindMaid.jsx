@@ -12,6 +12,7 @@ export const FindMaid = () => {
   let [data, setData] = useState()
   let [spin, setSpin] = useState(false);
   let [isShow, setIsShow] = useState(true)
+  let [isReport, setIsReport] = useState(false)
   let [showData, setShowData] = useState({})
   let [showPopup, setShowPopup] = useState(false)
 
@@ -35,6 +36,7 @@ export const FindMaid = () => {
   }
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm()
+  const { register: registerReport, handleSubmit: handleSubmitReport, setValue: setValueReport, reset: resetReport } = useForm()
 
   var today = new Date();
   var yyyy = today.getFullYear();
@@ -126,6 +128,45 @@ export const FindMaid = () => {
     }
   }
 
+  const reportMaid = async (formData) => {
+    try {
+      setSpin(true);
+      formData.timestamp = serverTimestamp()
+      formData.maidName = `${showData.fname} ${showData.lname}`
+      await addDoc(collection(db, "Complains"), formData);
+      setIsReport(false)
+      resetReport()
+      setSpin(false);
+      Swal.fire({
+        icon: "success",
+        title: "Complain Registerd",
+        toast: true,
+        showCancelButton: false,
+        animation: false,
+        position: "top",
+        timer: 3000,
+        showConfirmButton: false,
+        iconColor: "#A8C256",
+        confirmButtonColor: "#E0A800",
+      });
+      setShowPopup(false);
+    } catch (error) {
+      setSpin(false);
+      Swal.fire({
+        icon: "error",
+        title: "Unable to register complain",
+        toast: true,
+        showCancelButton: false,
+        animation: false,
+        position: "top",
+        timer: 3000,
+        showConfirmButton: false,
+        iconColor: "#C33149",
+        confirmButtonColor: "#E0A800",
+      });
+    }
+  }
+
   const [searchQuery, setSearchQuery] = useState("")
 
   const filtered =
@@ -179,6 +220,22 @@ export const FindMaid = () => {
           </button>
         </div>
       </Popup>
+      <Popup
+        title="Report Maid"
+        open={isReport}
+        width="md:w-1/2 w-11/12"
+        close={() => setIsReport(false)}
+      >
+        <div className="flex flex-col gap-0">
+          <div className="flex flex-col w-full">
+            <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-1 pl-1">Description</label>
+            <textarea type="text" {...registerReport("description", { required: true })} id="description" placeholder="Enter Full Description" className={(errors.description ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-2 placeholder:text-sm focus:outline-primary-0 h-40 resize-none cst-scrollbar"} />
+          </div>
+          <button onClick={handleSubmitReport(reportMaid)} type="button" className="w-full mt-2 bg-primary-0 hover:bg-transparent border-2 border-primary-0 transition-all duration-75 text-white hover:text-primary-0 px-4 py-1 rounded">
+            Report
+          </button>
+        </div>
+      </Popup>
       <div className="body-main h-screen bg-violet-200">
         <div className="w-full h-[12vh] px-6 flex items-center bg-primary-3">
           <h1 className="text-gray-700 md:text-4xl text-2xl font-bold">All Maids</h1>
@@ -186,9 +243,9 @@ export const FindMaid = () => {
         {
           isShow ?
             <div className="w-full h-[88vh] overflow-auto p-6 cst-scrollbar">
-              <div className="flex justify-between gap-4 relative mb-4">
+              <div className="flex md:flex-row flex-col justify-between gap-4 relative mb-4">
                 <div className="">
-                  <select onChange={(e) => setSearchQuery(e.target.value)} className="font-PoppinsRegular text-sm p-1 border rounded shadow-sm w-44">
+                  <select onChange={(e) => setSearchQuery(e.target.value)} className="font-PoppinsRegular text-sm p-1 border rounded shadow-sm md:w-44 w-full">
                     <option className="bg-white text-zinc-700" value="">All</option>
                     <option className="bg-white text-zinc-700" value="lessthanone">Less then 1 Year</option>
                     <option className="bg-white text-zinc-700" value="oneyear">1 Year</option>
@@ -251,7 +308,7 @@ export const FindMaid = () => {
                   <FontAwesomeIcon icon={faCircleLeft} />
                   Back
                 </button>
-                <button onClick={() => setIsShow(true)} className="flex items-center gap-2 text-sm text-primary-0 mb-2 rounded-full px-4 border border-primary-0 hover:bg-primary-0 hover:text-white transition duration-75 ease-in-out">
+                <button onClick={() => setIsReport(true)} className="flex items-center gap-2 text-sm text-primary-0 mb-2 rounded-full px-4 border border-primary-0 hover:bg-primary-0 hover:text-white transition duration-75 ease-in-out">
                   <FontAwesomeIcon icon={faFlag} />
                   Report
                 </button>
