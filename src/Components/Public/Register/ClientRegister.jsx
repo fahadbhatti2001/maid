@@ -137,9 +137,15 @@ export const ClientRegister = () => {
                                 <input type="password" {...register("password", { required: true })} id="password" placeholder="Enter your Password" className={(errors.password ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
                             </div>
                         </div>
-                        <div className="flex flex-col w-full">
-                            <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
-                            <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                        <div className="flex lg:flex-row flex-col lg:gap-4 gap-0">
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="phone" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Phone</label>
+                                <input type="number" {...register("phone", { required: true, minLength: 8 })} id="phone" placeholder="Enter your Phone Number" className={(errors.phone ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="address" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Address</label>
+                                <input type="text" {...register("address", { required: true })} id="address" placeholder="Enter your Full Address" className={(errors.address ? "placeholder:text-primary-0 border-primary-0" : "border-gray-300 placeholder:text-zinc-400") + "font-PoppinsRegular text-base p-2 border rounded shadow-sm mb-4 placeholder:text-xs focus:outline-primary-0"} />
+                            </div>
                         </div>
                         <div className="flex flex-col w-full">
                             <label htmlFor="description" className="font-PoppinsRegular text-sm text-zinc-800 pb-2 pl-1">Description</label>

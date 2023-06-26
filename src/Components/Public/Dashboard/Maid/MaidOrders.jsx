@@ -473,7 +473,7 @@ export const MaidOrders = () => {
                         <thead className="">
                             <tr className="border-b-transparent text-sm text-zinc-600">
                                 <th className="bg-violet-300 p-4 text-ellipsis overflow-hidden w-80 rounded-tl-md">Description</th>
-                                <th className="bg-violet-300 p-4">Start Date</th>
+                                <th className="bg-violet-300 p-4">Price</th>
                                 <th className="bg-violet-300 p-4">End Date</th>
                                 <th className="bg-violet-300 p-4">Status</th>
                                 <th className="bg-violet-300 p-4 rounded-tr-md text-center w-20">Action</th>

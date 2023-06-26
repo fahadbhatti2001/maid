@@ -324,7 +324,7 @@ export const AllMaids = () => {
                           </div>
                           <div className="flex items-center gap-1 text-amber-500">
                             <FontAwesomeIcon icon={faStar} className="text-xs" />
-                            <p className="font-PoppinsMedium  text-sm">5.0</p>
+                            <p className="font-PoppinsMedium  text-sm">{calculateRating(e.rate)}</p>
                           </div>
                         </div>
                       </div>
