@@ -4,7 +4,6 @@ import { faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 export const Popup = (props) => {
 
     const { open, width, close, title, children } = props
-
     if (!open) return <></>
 
     return (
